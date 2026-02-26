@@ -4,7 +4,7 @@ let
   cfg = config.services.scopone-server;
 in
 {
-  meta.maintainers = [ lib.maintainers.gerardo ];
+  meta.maintainers = [ lib.maintainers.gerrydoro ];
 
   options.services.scopone-server = {
     enable = lib.mkEnableOption "Scopone card game server";

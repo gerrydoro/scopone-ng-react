@@ -14,7 +14,7 @@ This directory contains the NixOS module and Nix expressions for deploying the S
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    scopone-ng-react.url = "github:gerardo/scopone-ng-react";
+    scopone-ng-react.url = "github:gerrydoro/scopone-ng-react";
   };
 
   outputs = { self, nixpkgs, scopone-ng-react }: {
@@ -135,7 +135,7 @@ services.scopone-server = {
 ### With Flakes
 
 ```bash
-nix build github:gerardo/scopone-ng-react#scopone-server
+nix build github:gerrydoro/scopone-ng-react#scopone-server
 ```
 
 ### Without Flakes
