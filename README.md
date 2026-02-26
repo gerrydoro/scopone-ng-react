@@ -14,6 +14,7 @@ It allows 4 players to play the game. It supports running more games at the same
 - [Angular Client](#angular-client)
 - [React Client](#react-client)
 - [CI/CD scripts](#cicd-scripts)
+- [NixOS Module](#nixos-module)
 
 ## Steps for a player to play the game
 
@@ -47,6 +48,7 @@ There are also other folders at the top of the workspace.
 
 - `scopone-rx-service`: contains the code which implements a service which is shared by both clients, the Angular and the React one
 - `serverless-cd`: contains the scripts that implement the CD logic, i.e. the script that allow to build and deploy the entire app, both client and server
+- `nixos-modules`: contains the NixOS module for deploying the server on NixOS systems
 
 ## Server
 
@@ -282,3 +284,50 @@ To build the Angular client for production and deploy it on an S3 bucket configu
 To build the React client for production and deploy it on an S3 bucket configure to host websites, move to the `serverless-cd/client-react-s3` folder and run the command
 
 - `bash build-deploy-react-front-end.sh`
+
+## NixOS Module
+
+The server can be deployed on [NixOS](https://nixos.org) systems using the provided NixOS module located in the `nixos-modules` folder.
+
+### Quick Start (Flakes)
+
+1. Add this repository to your NixOS configuration's flake inputs:
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    scopone-ng-react.url = "github:gerrydoro/scopone-ng-react";
+  };
+
+  outputs = { self, nixpkgs, scopone-ng-react }: {
+    nixosConfigurations.myhost = nixpkgs.lib.nixosSystem {
+      system = "x86_64-linux";
+      modules = [
+        ./configuration.nix
+        scopone-ng-react.nixosModules.scopone-server
+      ];
+    };
+  };
+}
+```
+
+2. Enable the service:
+
+```nix
+services.scopone-server = {
+  enable = true;
+  package = pkgs.scopone-server;
+  port = 8080;
+  # Optional MongoDB connection
+  # mongoConnection = "mongodb://user:password@localhost:27017/scopone";
+};
+```
+
+3. Rebuild your system:
+
+```bash
+sudo nixos-rebuild switch
+```
+
+For detailed documentation, see [nixos-modules/README.md](nixos-modules/README.md).

@@ -53,9 +53,10 @@ sudo nixos-rebuild switch
 
 ### Without Flakes
 
-1. Copy the module files to your configuration:
+1. Copy the module files from the repository root to your NixOS configuration:
 
 ```bash
+# From your local scopone-ng-react repository root
 cp -r nixos-modules /etc/nixos/scopone-server
 ```
 
@@ -182,15 +183,17 @@ The systemd service includes security hardening:
 
 ## Development
 
-To test changes to the NixOS module:
+To test changes to the NixOS module, run these commands from the repository root (`scopone-ng-react/`):
 
 1. Build the package:
    ```bash
+   cd scopone-ng-react
    nix-build nixos-modules/default.nix
    ```
 
 2. Test in a VM:
    ```bash
+   cd scopone-ng-react
    nix-build '<nixpkgs/nixos>' -A vm --arg configuration '{ config, pkgs, ... }: {
      imports = [ ./nixos-modules/scopone-server.nix ];
      services.scopone-server.enable = true;
