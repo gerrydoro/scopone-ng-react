@@ -1,4 +1,4 @@
-{ lib, buildNpmPackage }:
+{ lib, buildNpmPackage, nodejs_20 }:
 
 buildNpmPackage rec {
   pname = "scopone-client-ng";
@@ -6,7 +6,19 @@ buildNpmPackage rec {
 
   src = ../client-ng;
 
+  nodejs = nodejs_20;
+
   npmDepsHash = "sha256-R6HROzrIxL4xPa6ON4wNYQK59CzK1ROEyAjxhw2U3CY=";
+
+  # Create environment.prod.ts at build time
+  postPatch = ''
+    cat > src/environments/environment.prod.ts << 'ENVFILE'
+    export const environment = {
+      production: true,
+      serverAddress: 'ws://localhost:8080/osteria',
+    };
+    ENVFILE
+  '';
 
   buildPhase = ''
     npm run build -- --configuration=production
