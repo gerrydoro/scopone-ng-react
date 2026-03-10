@@ -1,12 +1,4 @@
-{ lib, buildNpmPackage, runCommand }:
-
-# First, create a combined source with scopone-rx-service/src
-combinedSrc = runCommand "client-react-with-rx-service" {} ''
-  mkdir -p $out
-  cp -r ${../client-react}/* $out/
-  mkdir -p $out/../scopone-rx-service
-  cp -r ${../scopone-rx-service}/src $out/../scopone-rx-service/src
-'';
+{ lib, buildNpmPackage }:
 
 buildNpmPackage rec {
   pname = "scopone-client-react";
