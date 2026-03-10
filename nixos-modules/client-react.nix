@@ -24,9 +24,8 @@ buildNpmPackage rec {
   };
 
   postPatch = ''
-    # Copy scopone-rx-service to parent directory (project root level)
-    mkdir -p ..
-    cp -r ${scoponeRxServiceSrc}/src ../scopone-rx-service/src
+    # Copy scopone-rx-service to current directory root level
+    cp -r ${scoponeRxServiceSrc}/src ./scopone-rx-service
     
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
@@ -54,7 +53,7 @@ buildNpmPackage rec {
               (rule) => rule.test && rule.test.toString().includes("tsx")
             );
             if (tsRule) {
-              const scoponeRxServicePath = path.resolve(__dirname, "../scopone-rx-service/src");
+              const scoponeRxServicePath = path.resolve(__dirname, "scopone-rx-service/src");
               tsRule.include = Array.isArray(tsRule.include)
                 ? [...tsRule.include, scoponeRxServicePath]
                 : [tsRule.include, scoponeRxServicePath];
