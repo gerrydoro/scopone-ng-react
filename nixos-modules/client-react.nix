@@ -51,6 +51,12 @@ buildNpmPackage rec {
             }
           }
           
+          // Add resolve alias for scopone-rx-service to use client-react's node_modules
+          config.resolve.modules = [
+            ...(config.resolve.modules || []),
+            path.resolve(__dirname, "node_modules"),
+          ];
+          
           return config;
         },
       },
