@@ -16,7 +16,7 @@ buildNpmPackage rec {
         lib.hasPrefix "scopone-rx-service/" relPath;
   };
 
-  sourceRoot = "source/client-ng";
+  sourceRoot = "client-ng";
 
   npmDepsHash = lib.fakeHash;
   npmDepsFetcherVersion = 2;
