@@ -71,14 +71,13 @@ in
       serviceConfig = {
         Type = "simple";
         ExecStart = "${cfg.package}/bin/scopone-in-memory-only";
-        WorkingDirectory = "${appEnv}/..";
         Restart = "on-failure";
         RestartSec = "5s";
         
         # Security hardening
         NoNewPrivileges = true;
         PrivateTmp = true;
-        ProtectSystem = "strict";
+        ProtectSystem = false;
         ProtectHome = true;
         
         # Network restrictions
@@ -90,7 +89,7 @@ in
 
       preStart = ''
         echo "Starting Scopone server..."
-        cp ${appEnv} ./app.env
+        cp ${appEnv} /tmp/app.env
       '';
     };
 
