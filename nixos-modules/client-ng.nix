@@ -15,7 +15,7 @@ buildNpmPackage rec {
         !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-8p50KjBsod41BpmQqDmAE/Gvz3Rrf8KRUmyHBA61x6A=";
   npmDepsFetcherVersion = 2;
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
