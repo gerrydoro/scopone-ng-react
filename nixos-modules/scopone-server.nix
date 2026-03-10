@@ -73,6 +73,7 @@ in
         ExecStart = "${cfg.package}/bin/scopone-in-memory-only";
         Restart = "on-failure";
         RestartSec = "5s";
+        StateDirectory = "scopone-server";
         
         # Security hardening
         NoNewPrivileges = true;
@@ -89,8 +90,10 @@ in
 
       preStart = ''
         echo "Starting Scopone server..."
-        cp ${appEnv} /tmp/app.env
+        cp ${appEnv} /var/lib/scopone-server/app.env
       '';
+
+      serviceConfig.WorkingDirectory = "/var/lib/scopone-server";
     };
 
     networking.firewall.allowedTCPPorts = lib.optional cfg.enable cfg.port;
