@@ -70,7 +70,7 @@ in
 
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${cfg.package}/bin/scopone-in-memory-only";
+        ExecStart = "${cfg.package}/bin/scopone-in-memory-only -addr ${cfg.host}:${toString cfg.port}";
         Restart = "on-failure";
         RestartSec = "5s";
         StateDirectory = "scopone-server";
