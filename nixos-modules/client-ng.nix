@@ -7,15 +7,18 @@ buildNpmPackage rec {
   version = "0.0.5";
 
   src = lib.cleanSourceWith {
-    src = ../client-ng;
+    src = ../.;
     filter = path: type:
       let
-        baseName = baseNameOf (toString path);
+        relPath = lib.removePrefix (toString ../. + "/") (toString path);
       in
-        !(lib.hasPrefix "." baseName && baseName != ".env");
+        lib.hasPrefix "client-ng/" relPath || 
+        lib.hasPrefix "scopone-rx-service/" relPath;
   };
 
-  npmDepsHash = "sha256-8p50KjBsod41BpmQqDmAE/Gvz3Rrf8KRUmyHBA61x6A=";
+  sourceRoot = "source/client-ng";
+
+  npmDepsHash = lib.fakeHash;
   npmDepsFetcherVersion = 2;
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
@@ -36,7 +39,7 @@ buildNpmPackage rec {
 
   installPhase = ''
     mkdir -p $out
-    cp -r dist/client-ng/browser/* $out/
+    cp -r build/* $out/
   '';
 
   meta = with lib; {
