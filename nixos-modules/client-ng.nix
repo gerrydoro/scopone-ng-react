@@ -30,6 +30,7 @@ stdenv.mkDerivation rec {
   '';
 
   buildPhase = ''
+    export HOME=$(mktemp -d)
     export NODE_OPTIONS="--openssl-legacy-provider"
     npm install --legacy-peer-deps
     npm run build -- --configuration=production
