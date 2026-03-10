@@ -32,9 +32,14 @@ buildNpmPackage rec {
       serverAddress: 'ws://localhost:8080/osteria',
     };
     ENVFILE
+    
+    # Disable Angular analytics
+    mkdir -p ~/.angular
+    echo '{"analytics":false}' > ~/.angular/config.json
   '';
 
   buildPhase = ''
+    export NG_CLI_ANALYTICS=false
     npm run build -- --configuration=production
   '';
 
