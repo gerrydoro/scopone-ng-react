@@ -13,10 +13,8 @@ buildNpmPackage rec {
         !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
-
   postPatch = ''
-    # Copy scopone-rx-service/src
+    # Copy scopone-rx-service
     mkdir -p ../scopone-rx-service
     cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
     
@@ -24,7 +22,7 @@ buildNpmPackage rec {
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
     
-    # Update craco config to handle scopone-rx-service TypeScript
+    # Update craco config
     cat > craco.config.js << 'CRACOEOF'
     const path = require("path");
     
@@ -59,6 +57,8 @@ buildNpmPackage rec {
     };
     CRACOEOF
   '';
+
+  npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
   # Use legacy OpenSSL provider
   env.NODE_OPTIONS = "--openssl-legacy-provider";
