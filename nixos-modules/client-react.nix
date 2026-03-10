@@ -1,5 +1,15 @@
 { lib, buildNpmPackage }:
 
+let
+  scoponeRxServiceSrc = lib.cleanSourceWith {
+    src = ../scopone-rx-service;
+    filter = path: type:
+      let
+        baseName = baseNameOf (toString path);
+      in
+        !(lib.hasPrefix "." baseName);
+  };
+in
 buildNpmPackage rec {
   pname = "scopone-client-react";
   version = "0.1.6";
@@ -16,7 +26,7 @@ buildNpmPackage rec {
   postPatch = ''
     # Copy scopone-rx-service to parent directory (project root level)
     mkdir -p ..
-    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
+    cp -r ${scoponeRxServiceSrc}/src ../scopone-rx-service/src
     
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
