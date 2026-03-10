@@ -15,6 +15,9 @@ buildNpmPackage rec {
     ENVFILE
   '';
 
+  # Use legacy OpenSSL provider for compatibility with older webpack
+  env.NODE_OPTIONS = "--openssl-legacy-provider";
+
   buildPhase = ''
     npm run build
   '';
