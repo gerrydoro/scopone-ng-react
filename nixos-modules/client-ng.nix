@@ -34,14 +34,6 @@ buildNpmPackage rec {
     ENVFILE
   '';
 
-  # Configure for offline build
-  env.npm_config_offline = "true";
-  env.npm_config_prefer_offline = "true";
-  env.npm_config_fund = "false";
-  env.npm_config_audit = "false";
-  env.npm_config_progress = "false";
-  env.CI = "true";
-
   buildPhase = ''
     npm run build -- --configuration=production
   '';
