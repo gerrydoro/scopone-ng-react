@@ -34,8 +34,8 @@ buildNpmPackage rec {
     ENVFILE
     
     # Disable Angular analytics
-    mkdir -p ~/.angular
-    echo '{"analytics":false}' > ~/.angular/config.json
+    mkdir -p .angular
+    echo '{"analytics":false}' > .angular/config.json
   '';
 
   buildPhase = ''
