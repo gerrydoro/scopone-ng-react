@@ -6,7 +6,7 @@ buildNpmPackage rec {
 
   src = ../client-react;
 
-  npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
 
   # Create .env.production at build time with server address
   postPatch = ''
