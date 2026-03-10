@@ -24,8 +24,10 @@ buildNpmPackage rec {
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
     
-    # Disable ModuleScopePlugin to allow imports from outside src/
+    # Update craco config to handle scopone-rx-service TypeScript
     cat > craco.config.js << 'CRACOEOF'
+    const path = require("path");
+    
     module.exports = {
       webpack: {
         configure: (config) => {
@@ -36,6 +38,21 @@ buildNpmPackage rec {
           if (scopePluginIndex !== -1) {
             config.resolve.plugins.splice(scopePluginIndex, 1);
           }
+          
+          // Add scopone-rx-service to TypeScript loader
+          const oneOfRule = config.module.rules.find((rule) => rule.oneOf);
+          if (oneOfRule) {
+            const tsRule = oneOfRule.oneOf.find(
+              (rule) => rule.test && rule.test.toString().includes("tsx")
+            );
+            if (tsRule) {
+              const scoponeRxServicePath = path.resolve(__dirname, "../scopone-rx-service/src");
+              tsRule.include = Array.isArray(tsRule.include)
+                ? [...tsRule.include, scoponeRxServicePath]
+                : [tsRule.include, scoponeRxServicePath];
+            }
+          }
+          
           return config;
         },
       },
