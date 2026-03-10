@@ -2,6 +2,10 @@
 
 let
   cfg = config.services.scopone-server;
+  
+  appEnv = pkgs.writeText "app.env" ''
+    VERSION="2.0.0"
+  '';
 in
 {
   meta.maintainers = [ lib.maintainers.gerardo ];
@@ -67,6 +71,7 @@ in
       serviceConfig = {
         Type = "simple";
         ExecStart = "${cfg.package}/bin/scopone-in-memory-only";
+        WorkingDirectory = "${appEnv}/..";
         Restart = "on-failure";
         RestartSec = "5s";
         
@@ -85,6 +90,7 @@ in
 
       preStart = ''
         echo "Starting Scopone server..."
+        cp ${appEnv} ./app.env
       '';
     };
 
