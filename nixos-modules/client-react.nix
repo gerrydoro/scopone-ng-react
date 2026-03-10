@@ -1,29 +1,27 @@
-{ lib, stdenv, nodejs, rsync }:
+{ lib, stdenv, nodejs }:
 
 stdenv.mkDerivation rec {
   pname = "scopone-client-react";
   version = "0.1.6";
 
   src = lib.cleanSourceWith {
-    src = ../.;
+    src = ../client-react;
     filter = path: type:
       let
-        relPath = lib.removePrefix (toString ../. + "/") (toString path);
+        baseName = baseNameOf (toString path);
       in
-        lib.hasPrefix "client-react/" relPath || 
-        lib.hasPrefix "scopone-rx-service/src/" relPath;
+        !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  buildInputs = [ nodejs rsync ];
-
-  sourceRoot = "source";
+  buildInputs = [ nodejs ];
 
   postPatch = ''
-    echo "REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria" > client-react/.env.production
+    echo "REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria" > .env.production
+    # Copy scopone-rx-service/src into place
+    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
   '';
 
   buildPhase = ''
-    cd client-react
     npm install
     NODE_OPTIONS="--openssl-legacy-provider" npm run build
   '';
