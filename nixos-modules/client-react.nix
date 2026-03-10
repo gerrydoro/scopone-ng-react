@@ -1,34 +1,40 @@
-{ lib, buildNpmPackage }:
+{ lib, buildNpmPackage, runCommand }:
+
+# First, create a combined source with scopone-rx-service/src
+combinedSrc = runCommand "client-react-with-rx-service" {} ''
+  mkdir -p $out
+  cp -r ${../client-react}/* $out/
+  mkdir -p $out/../scopone-rx-service
+  cp -r ${../scopone-rx-service}/src $out/../scopone-rx-service/src
+'';
 
 buildNpmPackage rec {
   pname = "scopone-client-react";
   version = "0.1.6";
 
   src = lib.cleanSourceWith {
-    src = ../.;
+    src = ../client-react;
     filter = path: type:
       let
-        relPath = lib.removePrefix (toString ../. + "/") (toString path);
+        baseName = baseNameOf (toString path);
       in
-        lib.hasPrefix "client-react/" relPath || 
-        lib.hasPrefix "scopone-rx-service/src/" relPath;
+        !(lib.hasPrefix "." baseName && baseName != ".env");
   };
-
-  sourceRoot = "source";
 
   npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
 
   postPatch = ''
-    cd client-react
+    # Copy scopone-rx-service/src
+    mkdir -p ../scopone-rx-service
+    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
+    
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
   '';
 
-  # Use legacy OpenSSL provider for compatibility with older webpack
+  # Use legacy OpenSSL provider
   env.NODE_OPTIONS = "--openssl-legacy-provider";
-
-  # Prevent network access and interactive prompts
   env.npm_config_offline = "true";
   env.npm_config_prefer_offline = "true";
   env.npm_config_fund = "false";
@@ -37,13 +43,12 @@ buildNpmPackage rec {
   env.CI = "true";
 
   buildPhase = ''
-    cd client-react
     npm run build
   '';
 
   installPhase = ''
     mkdir -p $out
-    cp -r client-react/build/* $out/
+    cp -r build/* $out/
   '';
 
   meta = with lib; {
