@@ -18,15 +18,14 @@ buildNpmPackage rec {
 
   npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
 
+  # Use legacy OpenSSL provider for compatibility with older webpack
+  env.NODE_OPTIONS = "--openssl-legacy-provider";
+
   postPatch = ''
-    cd client-react
-    cat > .env.production << 'ENVFILE'
+    cat > client-react/.env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
   '';
-
-  # Use legacy OpenSSL provider for compatibility with older webpack
-  env.NODE_OPTIONS = "--openssl-legacy-provider";
 
   buildPhase = ''
     cd client-react
