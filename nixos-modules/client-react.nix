@@ -58,7 +58,7 @@ buildNpmPackage rec {
     CRACOEOF
   '';
 
-  npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
 
   # Use legacy OpenSSL provider
   env.NODE_OPTIONS = "--openssl-legacy-provider";
