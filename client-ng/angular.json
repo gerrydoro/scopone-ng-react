@@ -23,7 +23,8 @@
               "@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "inlineStyleLanguage": "css"
           },
           "configurations": {
             "production": {
@@ -45,7 +46,12 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ]
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": { "minify": true, "inlineCritical": false },
+                "fonts": false
+              }
             },
             "development": {
               "optimization": false,
@@ -89,8 +95,5 @@
         }
       }
     }
-  },
-  "cli": {
-    "analytics": "e706c86b-b5c9-4ed7-82c9-f885c6f71b86"
   }
 }
