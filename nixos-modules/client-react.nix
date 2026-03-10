@@ -1,6 +1,6 @@
-{ lib, buildNpmPackage }:
+{ lib, stdenv, nodejs, rsync }:
 
-buildNpmPackage rec {
+stdenv.mkDerivation rec {
   pname = "scopone-client-react";
   version = "0.1.6";
 
@@ -14,12 +14,9 @@ buildNpmPackage rec {
         lib.hasPrefix "scopone-rx-service/src/" relPath;
   };
 
+  buildInputs = [ nodejs rsync ];
+
   sourceRoot = "source";
-
-  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
-
-  # Use legacy OpenSSL provider for compatibility with older webpack
-  env.NODE_OPTIONS = "--openssl-legacy-provider";
 
   postPatch = ''
     echo "REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria" > client-react/.env.production
@@ -27,12 +24,13 @@ buildNpmPackage rec {
 
   buildPhase = ''
     cd client-react
-    npm run build
+    npm install
+    NODE_OPTIONS="--openssl-legacy-provider" npm run build
   '';
 
   installPhase = ''
     mkdir -p $out
-    cp -r client-react/build/* $out/
+    cp -r build/* $out/
   '';
 
   meta = with lib; {
