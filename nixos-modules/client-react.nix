@@ -22,9 +22,7 @@ buildNpmPackage rec {
   env.NODE_OPTIONS = "--openssl-legacy-provider";
 
   postPatch = ''
-    cat > client-react/.env.production << 'ENVFILE'
-    REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
-    ENVFILE
+    echo "REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria" > client-react/.env.production
   '';
 
   buildPhase = ''
