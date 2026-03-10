@@ -20,3 +20,4 @@
       nixosModules.scopone-client-react = import ./nixos-modules/scopone-client-react.nix;
     };
 }
+# re-eval
