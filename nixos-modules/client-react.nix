@@ -11,9 +11,10 @@ buildNpmPackage rec {
 
   npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
 
-  # Copy scopone-rx-service into the build directory
+  # Copy scopone-rx-service source (excluding node_modules) into the build directory
   postPatch = ''
-    cp -r ${../scopone-rx-service} ../scopone-rx-service
+    mkdir -p ../scopone-rx-service
+    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
