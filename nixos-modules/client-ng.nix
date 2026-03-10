@@ -1,14 +1,25 @@
-{ lib, buildNpmPackage, nodejs_20 }:
+{ lib
+, buildNpmPackage
+, nodejs
+, python3
+}:
 
 buildNpmPackage rec {
   pname = "scopone-client-ng";
-  version = "0.0.4";
+  version = "0.0.5";
 
-  src = ../client-ng;
+  src = lib.cleanSourceWith {
+    src = ../client-ng;
+    filter = path: type:
+      let
+        baseName = baseNameOf (toString path);
+      in
+        !(lib.hasPrefix "." baseName && baseName != ".env");
+  };
 
-  nodejs = nodejs_20;
+  npmDepsHash = "sha256-H0G1ll0qmdDF/UpwI9XK+00dj62VFHnttpmoyCtJYeA=";
 
-  npmDepsHash = "sha256-R6HROzrIxL4xPa6ON4wNYQK59CzK1ROEyAjxhw2U3CY=";
+  nativeBuildInputs = [ python3 ];
 
   # Create environment.prod.ts at build time
   postPatch = ''
@@ -20,17 +31,25 @@ buildNpmPackage rec {
     ENVFILE
   '';
 
+  # Configure for offline build
+  env.npm_config_offline = "true";
+  env.npm_config_prefer_offline = "true";
+  env.npm_config_fund = "false";
+  env.npm_config_audit = "false";
+  env.npm_config_progress = "false";
+  env.CI = "true";
+
   buildPhase = ''
     npm run build -- --configuration=production
   '';
 
   installPhase = ''
     mkdir -p $out
-    cp -r dist/client/* $out/
+    cp -r dist/client-ng/browser/* $out/
   '';
 
   meta = with lib; {
-    description = "Scopone card game - Angular client";
+    description = "Scopone card game - Angular 20 client";
     homepage = "https://github.com/gerardo/scopone-ng-react";
     license = licenses.mit;
     maintainers = [ maintainers.gerardo ];

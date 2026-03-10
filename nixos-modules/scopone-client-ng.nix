@@ -2,14 +2,6 @@
 
 let
   cfg = config.services.scopone-client-ng;
-  
-  # Create environment file with server address
-  environmentTs = pkgs.writeText "environment.ts" ''
-    export const environment = {
-      production: true,
-      serverAddress: 'ws://${cfg.serverHost}:${toString cfg.serverPort}/osteria',
-    };
-  '';
 in
 {
   meta.maintainers = [ lib.maintainers.gerardo ];
@@ -30,41 +22,34 @@ in
 
     port = lib.mkOption {
       type = lib.types.port;
-      default = 4200;
+      default = 65026;
       description = "The port to listen on for the client web server.";
     };
 
-    serverHost = lib.mkOption {
+    serverAddress = lib.mkOption {
       type = lib.types.str;
-      default = "localhost";
-      description = "The hostname of the Scopone server for WebSocket connection.";
-    };
-
-    serverPort = lib.mkOption {
-      type = lib.types.port;
-      default = 8080;
-      description = "The port of the Scopone server for WebSocket connection.";
+      default = "ws://localhost:65025/osteria";
+      description = "The WebSocket address of the Scopone server.";
     };
 
     useNginx = lib.mkOption {
       type = lib.types.bool;
       default = true;
-      description = "Whether to use nginx to serve the static files (recommended for production).";
+      description = "Whether to use nginx to serve the static files.";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # If using nginx, configure it
     services.nginx = lib.mkIf cfg.useNginx {
       enable = true;
-      
+
       virtualHosts."${cfg.host}" = {
-        listen = [ 
+        listen = [
           { addr = cfg.host; port = cfg.port; }
         ];
-        
+
         root = cfg.package;
-        
+
         locations."/" = {
           tryFiles = "$uri $uri/ /index.html";
           extraConfig = ''

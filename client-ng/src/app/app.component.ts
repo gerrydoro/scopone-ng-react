@@ -1,12 +1,14 @@
 import { Component } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
+import { MaterialModule } from './material.module';
 
 @Component({
-  selector: 'scopone-root',
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, MaterialModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
+  styleUrl: './app.component.css',
 })
 export class AppComponent {
-  title = 'client-ng';
-
-  constructor() {}
+  title = 'Scopone - Italian Card Game';
 }
