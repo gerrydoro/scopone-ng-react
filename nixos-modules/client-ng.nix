@@ -17,7 +17,7 @@ buildNpmPackage rec {
         !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  npmDepsHash = "sha256-L9O1ig7lJ6XKNNJfcjjxgtCaAdr37UVE38dM3cV0L+k=";
+  npmDepsHash = lib.fakeHash;
   npmDepsFetcherVersion = 2;
 
   nativeBuildInputs = [ python3 ];
@@ -50,7 +50,7 @@ buildNpmPackage rec {
   '';
 
   meta = with lib; {
-    description = "Scopone card game - Angular 20 client";
+    description = "Scopone card game - Angular 19 client";
     homepage = "https://github.com/gerardo/scopone-ng-react";
     license = licenses.mit;
     maintainers = [ maintainers.gerardo ];
