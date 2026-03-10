@@ -23,6 +23,24 @@ buildNpmPackage rec {
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
+    
+    # Disable ModuleScopePlugin to allow imports from outside src/
+    cat > craco.config.js << 'CRACOEOF'
+    module.exports = {
+      webpack: {
+        configure: (config) => {
+          // Find and remove ModuleScopePlugin
+          const scopePluginIndex = config.resolve.plugins.findIndex(
+            ({ constructor }) => constructor && constructor.name === 'ModuleScopePlugin'
+          );
+          if (scopePluginIndex !== -1) {
+            config.resolve.plugins.splice(scopePluginIndex, 1);
+          }
+          return config;
+        },
+      },
+    };
+    CRACOEOF
   '';
 
   # Use legacy OpenSSL provider
