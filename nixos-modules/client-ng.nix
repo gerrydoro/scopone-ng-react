@@ -19,6 +19,7 @@ buildNpmPackage rec {
 
   npmDepsHash = "sha256-/OZxml8cNSDspvgmBvThYovCWZfjodApF29Yhvn86xY=";
   npmDepsFetcherVersion = 2;
+  npmFlags = [ "--legacy-peer-deps" ];
 
   nativeBuildInputs = [ python3 ];
 
