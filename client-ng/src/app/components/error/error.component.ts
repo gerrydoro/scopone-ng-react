@@ -1,24 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { ErrorService } from 'src/app/errors/error-service';
-import { ScoponeError } from 'src/app/errors/scopone-errors';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'scopone-error',
+  standalone: true,
+  imports: [MatCardModule, MatButtonModule],
   templateUrl: './error.component.html',
   styleUrls: ['./error.component.css'],
 })
-export class ErrorComponent implements OnInit {
-  error: ScoponeError;
-  constructor(private errorService: ErrorService, private router: Router) {}
+export class ErrorComponent {
+  error: any = { message: 'An unknown error occurred' };
 
-  ngOnInit(): void {
-    if (this.errorService.error) {
-      this.error = this.errorService.error;
-    } else {
-      // the error message is null in case we reload the this component not using the home url
-      // in this case we jump to the home page
-      this.router.navigate(['']);
-    }
+  constructor(private router: Router) {}
+
+  retry() {
+    this.router.navigate(['sign-in']);
   }
 }

@@ -1,36 +1,30 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component } from '@angular/core';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
+  selector: 'scopone-close-game-dialogue',
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatCardModule,
+    MatButtonModule,
+  ],
   template: `
     <mat-card>
-      <mat-card-header>
-        <mat-card-title>
-          Are you sure you want to terminate the game ?
-        </mat-card-title>
-      </mat-card-header>
       <mat-card-content>
-        <p>
-          If the game is terminated, it will not be possible to resume it later.
-        </p>
+        <p>Do you want to close the game?</p>
+        <div style="text-align: center; margin-top: 20px;">
+          <button mat-button (click)="onClose(true)">Yes</button>
+          <button mat-button (click)="onClose(false)">No</button>
+        </div>
       </mat-card-content>
-      <mat-card-actions>
-        <button mat-button (click)="cancel()">Cancel</button>
-        <button mat-button (click)="terminate()">TERMINATE</button>
-      </mat-card-actions>
     </mat-card>
   `,
-  styleUrls: ['./hand-result.component.css'],
 })
-export class CloseGameDialogueComponent implements OnInit {
-  constructor(public dialogRef: MatDialogRef<CloseGameDialogueComponent>) {}
-
-  ngOnInit(): void {}
-
-  cancel() {
-    this.dialogRef.close(false);
-  }
-  terminate() {
-    this.dialogRef.close(true);
+export class CloseGameDialogueComponent {
+  onClose(result: boolean) {
+    // The dialog will close with the result
   }
 }

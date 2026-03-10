@@ -1,27 +1,39 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { AsyncPipe } from '@angular/common';
 
 import { ScoponeService } from '../../scopone/scopone.service';
-import { MatDialog } from '@angular/material/dialog';
 import { CloseGameDialogueComponent } from './close-game-dialogue.component';
-import { Observable } from 'rxjs';
+import { CardsComponent } from '../cards/cards.component';
 import { PlayerView } from '../../../../../scopone-rx-service/src/model/player-view';
-import { map, share, tap } from 'rxjs/operators';
 import { Card } from '../../../../../scopone-rx-service/src/model/card';
 
 @Component({
   selector: 'scopone-hand-result',
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatCardModule,
+    MatButtonModule,
+    CardsComponent,
+    AsyncPipe,
+  ],
   templateUrl: './hand-result.component.html',
   styleUrls: ['./hand-result.component.css'],
 })
 export class HandResultComponent implements OnInit {
-  finalHandView$: Observable<PlayerView>;
-  finalHandScore$: Observable<string>;
-  gameScore$: Observable<string>;
-  ourCards$: Observable<Card[]>;
-  theirCards$: Observable<Card[]>;
-  ourScope$: Observable<Card[]>;
-  theirScope$: Observable<Card[]>;
+  finalHandView$!: Observable<PlayerView>;
+  finalHandScore$!: Observable<string>;
+  gameScore$!: Observable<string>;
+  ourCards$!: Observable<Card[]>;
+  theirCards$!: Observable<Card[]>;
+  ourScope$!: Observable<Card[]>;
+  theirScope$!: Observable<Card[]>;
 
   constructor(
     public scoponeService: ScoponeService,
@@ -47,19 +59,19 @@ export class HandResultComponent implements OnInit {
     );
 
     this.ourCards$ = this.finalHandView$.pipe(
-      map((finalHandView) => finalHandView.ourScorecard.carte)
+      map((finalHandView) => finalHandView.ourScorecard?.carte ?? [])
     );
 
     this.theirCards$ = this.finalHandView$.pipe(
-      map((finalHandView) => finalHandView.theirScorecard.carte)
+      map((finalHandView) => finalHandView.theirScorecard?.carte ?? [])
     );
 
     this.ourScope$ = this.finalHandView$.pipe(
-      map((finalHandView) => finalHandView.ourScope)
+      map((finalHandView) => finalHandView.ourScope ?? [])
     );
 
     this.theirScope$ = this.finalHandView$.pipe(
-      map((finalHandView) => finalHandView.theirScope)
+      map((finalHandView) => finalHandView.theirScope ?? [])
     );
   }
 
@@ -67,6 +79,7 @@ export class HandResultComponent implements OnInit {
     this.scoponeService.newHand();
     this.router.navigate(['hand']);
   }
+
   close() {
     const dialogRef = this.dialog.open(CloseGameDialogueComponent, {
       width: '400px',
@@ -75,9 +88,6 @@ export class HandResultComponent implements OnInit {
     dialogRef.afterClosed().subscribe((terminate) => {
       if (terminate) {
         this.scoponeService.closeCurrentGame();
-        // the navigation to the 'bye' page is governed by the GameComponent so that, when a game is closed by one player,
-        // all players are automatically brought to the 'bye' page and not only the player who has actualle closed the game
-        // this.router.navigate(['bye']);
       }
     });
   }

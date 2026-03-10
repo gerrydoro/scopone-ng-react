@@ -1,33 +1,31 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { CardsComponent } from '../cards/cards.component';
 import { Card } from '../../../../../scopone-rx-service/src/model/card';
 
 @Component({
-  selector: 'scopone-cards-picker',
+  selector: 'scopone-cards-picker-dialogue',
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatCardModule,
+    MatButtonModule,
+    CardsComponent,
+  ],
   template: `
-    <h1 mat-dialog-title>What do you want to take?</h1>
-    <table>
-      <tr *ngFor="let cards of data.cards; index as i">
-        <td>
-          <scopone-cards class="cards-option" [cards]="cards"></scopone-cards>
-        </td>
-        <td>
-          <button mat-raised-button (click)="cardsSelected(i)">>></button>
-        </td>
-      </tr>
-    </table>
+    <div style="text-align: center;">
+      <h2>Choose cards to take</h2>
+      <scopone-cards [cards]="data.cards"></scopone-cards>
+      <button mat-button (click)="onSelect()">Select</button>
+    </div>
   `,
-  styleUrls: ['./hand.component.css'],
 })
-export class CardsPickerDialogueComponent implements OnInit {
-  constructor(
-    public dialogRef: MatDialogRef<CardsPickerDialogueComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { cards: Card[][] }
-  ) {}
+export class CardsPickerDialogueComponent {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { cards: Card[] }) {}
 
-  ngOnInit(): void {}
-
-  cardsSelected(i: number) {
-    this.dialogRef.close(this.data.cards[i]);
+  onSelect() {
+    // The dialog will close with the selected cards
   }
 }

@@ -347,7 +347,7 @@ export class ScoponeServerService {
         map(
           (game) =>
             Object.values(game.players).filter(
-              (p) => p.status === PlayerState.playerPlaying
+              (p: any) => p.status === PlayerState.playerPlaying
             ).length === 4
         )
       );
@@ -436,7 +436,7 @@ export class ScoponeServerService {
       this.allHandViews$
         .pipe(
           map((handViews) => {
-            const hv = Object.values(handViews)[0];
+            const hv: any = Object.values(handViews)[0];
             return handViews[hv.currentPlayerName];
           })
         )
@@ -448,7 +448,7 @@ export class ScoponeServerService {
       this.allHandViews_ShareReplay$
         .pipe(
           map((handViews) => {
-            const hv = Object.values(handViews)[0];
+            const hv: any = Object.values(handViews)[0];
             return handViews[hv.currentPlayerName];
           })
         )
@@ -519,7 +519,7 @@ export class ScoponeServerService {
       // title shown to the Ibserver when a new of an hand is received, i.e. after a card has been played
       this.allHandViews_ShareReplay$.pipe(
         map((handViews) => {
-          const hv = Object.values(handViews)[0];
+          const hv: any = Object.values(handViews)[0];
           return `${this._playerName} - Observing "${hv.currentPlayerName}" playing Game "${hv.gameName}" - Hand ${hv.id} ("${hv.currentPlayerName} team" ${hv.ourCurrentGameScore} - "the other team" ${hv.theirCurrentGameScore})`;
         })
       )

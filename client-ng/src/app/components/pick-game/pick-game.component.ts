@@ -1,56 +1,71 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ScoponeService } from '../../scopone/scopone.service';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatListModule } from '@angular/material/list';
+import { Observable, Subject } from 'rxjs';
 import { tap, takeUntil } from 'rxjs/operators';
-import { Subject, merge } from 'rxjs';
-import { ScoponeError } from 'src/app/errors/scopone-errors';
-import { ErrorService } from 'src/app/errors/error-service';
+
+import { ScoponeService } from '../../scopone/scopone.service';
+import { GamePickerDialogueComponent } from '../game-list/game-picker-dialogue.component';
+import { GameListComponent } from '../game-list/game-list.component';
+import { NewGameComponent } from '../new-game/new-game.component';
 
 @Component({
   selector: 'scopone-pick-game',
+  standalone: true,
+  imports: [
+    MatDialogModule,
+    MatCardModule,
+    MatButtonModule,
+    MatListModule,
+    GameListComponent,
+    NewGameComponent,
+  ],
   templateUrl: './pick-game.component.html',
   styleUrls: ['./pick-game.component.css'],
 })
 export class PickGameComponent implements OnInit, OnDestroy {
+  openGames$!: Observable<any>;
+  unsubscribe = new Subject<void>();
+
   constructor(
-    protected scoponeServer: ScoponeService,
-    private router: Router,
-    private errorService: ErrorService
+    public scoponeService: ScoponeService,
+    private router: Router
   ) {}
 
-  private complete$ = new Subject<void>();
-
   ngOnInit(): void {
-    if (!this.scoponeServer.playerName) {
+    if (!this.scoponeService.playerName) {
       this.router.navigate(['']);
     }
 
-    merge(
-      this.scoponeServer.myCurrentOpenGame_ShareReplay$,
-      this.scoponeServer.myCurrentObservedGame_ShareReplay$
-    )
-      .pipe(
-        tap((game) => {
-          this.router.navigate(['hand']);
-        }),
-        takeUntil(this.complete$)
-      )
-      .subscribe();
-
-    this.scoponeServer.gameWithSameNamePresent_ShareReplay$
-      .pipe(
-        tap((gameName) => {
-          const err: ScoponeError = {
-            message: `A game with the same name "${gameName}" has been already defined`,
-          };
-          this.errorService.notifyError(err);
-        }),
-        takeUntil(this.complete$)
-      )
-      .subscribe();
+    this.openGames$ = this.scoponeService.games_ShareReplay$.pipe(
+      tap((games: any) => {
+        if (games && games.length > 0) {
+          const dialogRef = this.scoponeService.dialog.open(GamePickerDialogueComponent, {
+            width: '400px',
+            height: '400px',
+            data: { games },
+          });
+          dialogRef.afterClosed().subscribe((selectedGame: any) => {
+            if (selectedGame) {
+              this.scoponeService.addPlayerToGame(this.scoponeService.playerName, selectedGame.name);
+              this.router.navigate(['hand']);
+            }
+          });
+        }
+      }),
+      takeUntil(this.unsubscribe)
+    );
   }
 
   ngOnDestroy() {
-    this.complete$.next();
+    this.unsubscribe.next();
+  }
+
+  createGame() {
+    this.scoponeService.newGame('New Game');
+    this.router.navigate(['hand']);
   }
 }
