@@ -1,4 +1,4 @@
-{ lib, buildNpmPackage, runCommand }:
+{ lib, buildNpmPackage }:
 
 buildNpmPackage rec {
   pname = "scopone-client-ng";
@@ -6,7 +6,7 @@ buildNpmPackage rec {
 
   src = ../client-ng;
 
-  npmDepsHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  npmDepsHash = "sha256-R6HROzrIxL4xPa6ON4wNYQK59CzK1ROEyAjxhw2U3CY=";
 
   buildPhase = ''
     npm run build -- --configuration=production
