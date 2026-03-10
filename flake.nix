@@ -13,7 +13,6 @@
       in
       {
         packages.scopone-server = pkgs.callPackage ./nixos-modules/default.nix { };
-        packages.scopone-client-react = pkgs.callPackage ./nixos-modules/client-react.nix { };
         defaultPackage = self.packages.${system}.scopone-server;
       }
     ) // {

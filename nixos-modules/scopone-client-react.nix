@@ -9,9 +9,9 @@ in
   options.services.scopone-client-react = {
     enable = lib.mkEnableOption "Scopone React client";
 
-    package = lib.mkOption {
-      type = lib.types.package;
-      description = "The Scopone React client package to use.";
+    root = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to the built React client files (build/ directory).";
     };
 
     host = lib.mkOption {
@@ -22,26 +22,19 @@ in
 
     port = lib.mkOption {
       type = lib.types.port;
-      default = 4200;
+      default = 65026;
       description = "The port to listen on for the client web server.";
     };
 
     serverAddress = lib.mkOption {
       type = lib.types.str;
-      default = "ws://localhost:8080/osteria";
+      default = "ws://localhost:65025/osteria";
       description = "The WebSocket address of the Scopone server.";
-    };
-
-    useNginx = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Whether to use nginx to serve the static files (recommended for production).";
     };
   };
 
   config = lib.mkIf cfg.enable {
-    # If using nginx, configure it
-    services.nginx = lib.mkIf cfg.useNginx {
+    services.nginx = {
       enable = true;
       
       virtualHosts."${cfg.host}" = {
@@ -49,7 +42,7 @@ in
           { addr = cfg.host; port = cfg.port; }
         ];
         
-        root = cfg.package;
+        root = cfg.root;
         
         locations."/" = {
           tryFiles = "$uri $uri/ /index.html";
@@ -63,7 +56,5 @@ in
     };
 
     networking.firewall.allowedTCPPorts = lib.optional cfg.enable cfg.port;
-
-    environment.systemPackages = lib.optional cfg.enable cfg.package;
   };
 }
