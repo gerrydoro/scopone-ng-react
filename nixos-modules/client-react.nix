@@ -9,6 +9,8 @@ buildNpmPackage rec {
     filter = path: type: builtins.pathExists path;
   };
 
+  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
+
   # Copy scopone-rx-service into the build directory
   postPatch = ''
     cp -r ${../scopone-rx-service} ../scopone-rx-service
