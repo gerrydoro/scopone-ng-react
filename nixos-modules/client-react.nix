@@ -5,19 +5,13 @@ buildNpmPackage rec {
   version = "0.1.6";
 
   src = lib.cleanSourceWith {
-    src = ../.;
-    filter = path: type:
-      let
-        relPath = lib.removePrefix (toString ../. + "/") (toString path);
-      in
-        lib.hasPrefix "client-react/" relPath || 
-        lib.hasPrefix "scopone-rx-service/" relPath;
+    src = ../client-react;
+    filter = path: type: builtins.pathExists path;
   };
 
-  sourceRoot = "source";
-
+  # Copy scopone-rx-service into the build directory
   postPatch = ''
-    cd client-react
+    cp -r ${../scopone-rx-service} ../scopone-rx-service
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
@@ -27,13 +21,12 @@ buildNpmPackage rec {
   env.NODE_OPTIONS = "--openssl-legacy-provider";
 
   buildPhase = ''
-    cd client-react
     npm run build
   '';
 
   installPhase = ''
     mkdir -p $out
-    cp -r client-react/build/* $out/
+    cp -r build/* $out/
   '';
 
   meta = with lib; {
