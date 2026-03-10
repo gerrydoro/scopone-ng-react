@@ -4,7 +4,17 @@ buildNpmPackage rec {
   pname = "scopone-client-react";
   version = "0.1.6";
 
-  src = ../client-react;
+  src = lib.cleanSourceWith {
+    src = ../.;
+    filter = path: type:
+      let
+        relPath = lib.removePrefix (toString ../. + "/") (toString path);
+      in
+        lib.hasPrefix "client-react/" relPath || 
+        lib.hasPrefix "scopone-rx-service/" relPath;
+  };
+
+  sourceRoot = "source/client-react";
 
   npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
 
