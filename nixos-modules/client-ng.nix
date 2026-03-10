@@ -7,28 +7,23 @@ buildNpmPackage rec {
   version = "0.0.5";
 
   src = lib.cleanSourceWith {
-    src = ../.;
+    src = ../client-ng;
     filter = path: type:
       let
-        relPath = lib.removePrefix (toString ../. + "/") (toString path);
+        baseName = baseNameOf (toString path);
       in
-        lib.hasPrefix "client-ng/" relPath || 
-        lib.hasPrefix "scopone-rx-service/" relPath;
+        !(lib.hasPrefix "." baseName && baseName != ".env");
   };
-
-  sourceRoot = "source";
 
   npmDepsHash = lib.fakeHash;
   npmDepsFetcherVersion = 2;
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
 
-  # Move client-ng to root and create environment.prod.ts
+  # Copy scopone-rx-service and create environment.prod.ts
   postPatch = ''
-    # Move client-ng contents to root
-    mv client-ng/* .
-    mv client-ng/.* . 2>/dev/null || true
-    rm -rf client-ng
+    # Copy scopone-rx-service
+    cp -r ${../scopone-rx-service} ../scopone-rx-service
     
     # Create environment.prod.ts
     cat > src/environments/environment.prod.ts << 'ENVFILE'
