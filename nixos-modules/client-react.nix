@@ -1,4 +1,4 @@
-{ lib, stdenv, nodejs }:
+{ lib, stdenv, nodejs, git }:
 
 stdenv.mkDerivation rec {
   pname = "scopone-client-react";
@@ -8,22 +8,38 @@ stdenv.mkDerivation rec {
     src = ../client-react;
     filter = path: type:
       let
+        relPath = lib.removePrefix (toString ../client-react + "/") (toString path);
         baseName = baseNameOf (toString path);
       in
-        !(lib.hasPrefix "." baseName && baseName != ".env");
+        !(lib.hasPrefix "." baseName && baseName != ".env") &&
+        !lib.hasPrefix "node_modules/" relPath &&
+        !lib.hasPrefix "build/" relPath;
   };
 
-  buildInputs = [ nodejs ];
+  buildInputs = [ nodejs git ];
 
+  # Copy scopone-rx-service/src before npm install
   postPatch = ''
-    echo "REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria" > .env.production
-    # Copy scopone-rx-service/src into place
+    # Create scopone-rx-service directory and copy src
     mkdir -p ../scopone-rx-service
-    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/
+    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
+    
+    # Create .env.production
+    cat > .env.production << 'ENVFILE'
+    REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
+    ENVFILE
+  '';
+
+  # Configure npm to not hang
+  preBuild = ''
+    export npm_config_fund=false
+    export npm_config_audit=false
+    export npm_config_progress=false
+    export CI=true
   '';
 
   buildPhase = ''
-    npm install
+    npm ci --legacy-peer-deps
     NODE_OPTIONS="--openssl-legacy-provider" npm run build
   '';
 
