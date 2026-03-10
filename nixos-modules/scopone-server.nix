@@ -54,17 +54,19 @@ in
   config = lib.mkIf cfg.enable {
     systemd.services.scopone-server = {
       description = "Scopone Card Game Server";
-      after = [ "network-online.target" ] ++ lib.optional (cfg.mongoConnection != null) "network.target";
+      after = [ "network-online.target" ];
       wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
 
       environment = {
         GIN_MODE = "release";
-      } // cfg.extraEnvironment;
+      } // cfg.extraEnvironment // lib.optionalAttrs (cfg.mongoConnection != null) {
+        MONGO_CONNECTION = cfg.mongoConnection;
+      };
 
       serviceConfig = {
         Type = "simple";
-        ExecStart = "${cfg.package}/bin/scopone-mongo";
+        ExecStart = "${cfg.package}/bin/scopone-in-memory-only";
         Restart = "on-failure";
         RestartSec = "5s";
         

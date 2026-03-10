@@ -17,13 +17,13 @@ buildGo124Module rec {
 
   vendorHash = "sha256-RGiTwSGf3G/x7MmUP/CDDMMXY5En2E/k7m+h6OCsbaw=";
 
-  subPackages = [ "src/cmd/scopone-mongo" ];
+  subPackages = [ "src/cmd/scopone-in-memory-only" ];
 
   meta = with lib; {
-    description = "Scopone - A traditional Italian card game server";
+    description = "Scopone - A traditional Italian card game server (in-memory mode)";
     homepage = "https://github.com/gerardo/scopone-ng-react";
     license = licenses.mit;
     maintainers = [ maintainers.gerardo ];
-    mainProgram = "scopone-mongo";
+    mainProgram = "scopone-in-memory-only";
   };
 }

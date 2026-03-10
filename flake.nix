@@ -1,5 +1,5 @@
 {
-  description = "Scopone card game server - NixOS module";
+  description = "Scopone card game server";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -12,24 +12,10 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        packages.scopone-server = pkgs.callPackage ./default.nix { };
+        packages.scopone-server = pkgs.callPackage ./nixos-modules/default.nix { };
         defaultPackage = self.packages.${system}.scopone-server;
       }
     ) // {
-      nixosModules.scopone-server = import ./scopone-server.nix;
-      
-      nixosConfigurations.example = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        modules = [
-          ./example-configuration.nix
-          {
-            nixpkgs.overlays = [
-              (final: prev: {
-                scopone-server = self.packages.${final.system}.scopone-server;
-              })
-            ];
-          }
-        ];
-      };
+      nixosModules.scopone-server = import ./nixos-modules/scopone-server.nix;
     };
 }
