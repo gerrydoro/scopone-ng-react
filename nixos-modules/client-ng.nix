@@ -16,15 +16,21 @@ buildNpmPackage rec {
         lib.hasPrefix "scopone-rx-service/" relPath;
   };
 
-  sourceRoot = "client-ng";
+  sourceRoot = "source";
 
   npmDepsHash = lib.fakeHash;
   npmDepsFetcherVersion = 2;
   npmFlags = [ "--legacy-peer-deps" ];
   makeCacheWritable = true;
 
-  # Create environment.prod.ts at build time
+  # Move client-ng to root and create environment.prod.ts
   postPatch = ''
+    # Move client-ng contents to root
+    mv client-ng/* .
+    mv client-ng/.* . 2>/dev/null || true
+    rm -rf client-ng
+    
+    # Create environment.prod.ts
     cat > src/environments/environment.prod.ts << 'ENVFILE'
     export const environment = {
       production: true,
