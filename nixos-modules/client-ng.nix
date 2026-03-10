@@ -1,10 +1,8 @@
 { lib
-, stdenv
-, nodejs
-, python3
+, buildNpmPackage
 }:
 
-stdenv.mkDerivation rec {
+buildNpmPackage rec {
   pname = "scopone-client-ng";
   version = "0.0.5";
 
@@ -17,7 +15,10 @@ stdenv.mkDerivation rec {
         !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  nativeBuildInputs = [ nodejs python3 ];
+  npmDepsHash = "sha256-H0G1ll0qmdDF/UpwI9XK+00dj62VFHnttpmoyCtJYeA=";
+  npmDepsFetcherVersion = 2;
+  npmFlags = [ "--legacy-peer-deps" ];
+  makeCacheWritable = true;
 
   # Create environment.prod.ts at build time
   postPatch = ''
@@ -30,9 +31,6 @@ stdenv.mkDerivation rec {
   '';
 
   buildPhase = ''
-    export HOME=$(mktemp -d)
-    export NODE_OPTIONS="--openssl-legacy-provider"
-    npm install --legacy-peer-deps
     npm run build -- --configuration=production
   '';
 
