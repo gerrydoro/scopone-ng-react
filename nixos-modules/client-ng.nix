@@ -45,7 +45,7 @@ buildNpmPackage rec {
 
   installPhase = ''
     mkdir -p $out
-    cp -r build/* $out/
+    cp -r dist/client-ng/browser/* $out/
   '';
 
   meta = with lib; {
