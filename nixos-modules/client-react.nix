@@ -1,51 +1,49 @@
-{ lib, stdenv, nodejs, git }:
+{ lib, buildNpmPackage }:
 
-stdenv.mkDerivation rec {
+buildNpmPackage rec {
   pname = "scopone-client-react";
   version = "0.1.6";
 
   src = lib.cleanSourceWith {
-    src = ../client-react;
+    src = ../.;
     filter = path: type:
       let
-        relPath = lib.removePrefix (toString ../client-react + "/") (toString path);
-        baseName = baseNameOf (toString path);
+        relPath = lib.removePrefix (toString ../. + "/") (toString path);
       in
-        !(lib.hasPrefix "." baseName && baseName != ".env") &&
-        !lib.hasPrefix "node_modules/" relPath &&
-        !lib.hasPrefix "build/" relPath;
+        lib.hasPrefix "client-react/" relPath || 
+        lib.hasPrefix "scopone-rx-service/src/" relPath;
   };
 
-  buildInputs = [ nodejs git ];
+  sourceRoot = "source";
 
-  # Copy scopone-rx-service/src before npm install
+  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
+
   postPatch = ''
-    # Create scopone-rx-service directory and copy src
-    mkdir -p ../scopone-rx-service
-    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
-    
-    # Create .env.production
+    cd client-react
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
   '';
 
-  # Configure npm to not hang
-  preBuild = ''
-    export npm_config_fund=false
-    export npm_config_audit=false
-    export npm_config_progress=false
-    export CI=true
-  '';
+  # Use legacy OpenSSL provider for compatibility with older webpack
+  env.NODE_OPTIONS = "--openssl-legacy-provider";
+
+  # Prevent network access and interactive prompts
+  env.npm_config_offline = "true";
+  env.npm_config_prefer_offline = "true";
+  env.npm_config_fund = "false";
+  env.npm_config_audit = "false";
+  env.npm_config_progress = "false";
+  env.CI = "true";
 
   buildPhase = ''
-    npm ci --legacy-peer-deps
-    NODE_OPTIONS="--openssl-legacy-provider" npm run build
+    cd client-react
+    npm run build
   '';
 
   installPhase = ''
     mkdir -p $out
-    cp -r build/* $out/
+    cp -r client-react/build/* $out/
   '';
 
   meta = with lib; {
