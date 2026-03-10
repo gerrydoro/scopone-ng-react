@@ -18,6 +18,9 @@ buildNpmPackage rec {
     mkdir -p ../scopone-rx-service
     cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
     
+    # Create symlink to node_modules for scopone-rx-service
+    ln -s ../client-react/node_modules ../scopone-rx-service/node_modules
+    
     cat > .env.production << 'ENVFILE'
     REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria
     ENVFILE
@@ -50,12 +53,6 @@ buildNpmPackage rec {
                 : [tsRule.include, scoponeRxServicePath];
             }
           }
-          
-          // Add resolve alias for scopone-rx-service to use client-react's node_modules
-          config.resolve.modules = [
-            ...(config.resolve.modules || []),
-            path.resolve(__dirname, "node_modules"),
-          ];
           
           return config;
         },
