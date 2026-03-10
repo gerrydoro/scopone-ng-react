@@ -17,7 +17,7 @@ buildNpmPackage rec {
         !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  npmDepsHash = lib.fakeHash;
+  npmDepsHash = "sha256-L9O1ig7lJ6XKNNJfcjjxgtCaAdr37UVE38dM3cV0L+k=";
   npmDepsFetcherVersion = 2;
 
   nativeBuildInputs = [ python3 ];
