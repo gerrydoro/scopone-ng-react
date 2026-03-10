@@ -18,7 +18,8 @@ stdenv.mkDerivation rec {
   postPatch = ''
     echo "REACT_APP_SERVER_ADDRESS=ws://localhost:8080/osteria" > .env.production
     # Copy scopone-rx-service/src into place
-    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/src
+    mkdir -p ../scopone-rx-service
+    cp -r ${../scopone-rx-service}/src ../scopone-rx-service/
   '';
 
   buildPhase = ''
