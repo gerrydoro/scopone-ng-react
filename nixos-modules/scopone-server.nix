@@ -2,9 +2,10 @@
 
 let
   cfg = config.services.scopone-server;
-  
-  appEnv = pkgs.writeText "app.env" ''
-    VERSION="2.0.0"
+
+  # Default environment file content
+  defaultEnvFile = pkgs.writeText "scopone-server.env" ''
+    GIN_MODE=release
   '';
 in
 {
@@ -74,27 +75,39 @@ in
         Restart = "on-failure";
         RestartSec = "5s";
         StateDirectory = "scopone-server";
-        
+        WorkingDirectory = "/var/lib/scopone-server";
+
         # Security hardening
         NoNewPrivileges = true;
         PrivateTmp = true;
-        ProtectSystem = false;
+        ProtectSystem = "strict";
         ProtectHome = true;
-        
+        ReadWritePaths = [ "/var/lib/scopone-server" ];
+
         # Network restrictions
         RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
-        
+
         # Resource limits
         LimitNOFILE = 65536;
+
+        # User/Group
+        User = "scopone-server";
+        Group = "scopone-server";
       };
 
       preStart = ''
-        echo "Starting Scopone server..."
-        cp ${appEnv} /var/lib/scopone-server/app.env
+        echo "Starting Scopone server on ${cfg.host}:${toString cfg.port}..."
       '';
-
-      serviceConfig.WorkingDirectory = "/var/lib/scopone-server";
     };
+
+    # Create user and group for the service
+    users.users.scopone-server = {
+      description = "Scopone server service user";
+      group = "scopone-server";
+      isSystemUser = true;
+    };
+
+    users.groups.scopone-server = {};
 
     networking.firewall.allowedTCPPorts = lib.optional cfg.enable cfg.port;
 

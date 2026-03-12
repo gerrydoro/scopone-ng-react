@@ -2,6 +2,11 @@
 
 let
   cfg = config.services.scopone-client-ng;
+
+  # Create the package with the configured server address
+  clientPackage = pkgs.callPackage ./client-ng.nix {
+    inherit (cfg) serverAddress;
+  };
 in
 {
   meta.maintainers = [ lib.maintainers.gerardo ];
@@ -11,6 +16,7 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
+      default = clientPackage;
       description = "The Scopone Angular client package to use.";
     };
 

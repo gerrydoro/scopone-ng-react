@@ -1,17 +1,22 @@
-{ lib, buildGo124Module }:
+{ lib
+, buildGoModule
+, go_1_24
+}:
 
-buildGo124Module rec {
+buildGoModule rec {
   pname = "scopone-server";
   version = "2.0.0";
 
+  go = go_1_24;
+
   src = lib.cleanSourceWith {
     src = ../server;
-    filter = path: type: 
+    filter = path: type:
       let
         relPath = lib.removePrefix (toString ../server + "/") (toString path);
       in
-        !(lib.hasPrefix "." (baseNameOf relPath) && 
-          relPath != "go.mod" && 
+        !(lib.hasPrefix "." (baseNameOf relPath) &&
+          relPath != "go.mod" &&
           relPath != "go.sum");
   };
 
