@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trevigiane Card Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #1a1a2e;
+            color: white;
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card-preview {
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+            text-align: center;
+        }
+        .card-preview img {
+            width: 100%;
+            height: auto;
+        }
+        .card-preview p {
+            color: #333;
+            font-size: 12px;
+            margin: 5px 0 0 0;
+        }
+        button {
+            padding: 10px 20px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #3d6b1f;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎴 Trevigiane Card Generator</h1>
+    <p>Click the button to download all card SVGs</p>
+    <button onclick="downloadAllCards()">Download All Cards</button>
+    
+    <div class="card-grid" id="cardGrid"></div>
+
+    <script>
+        const suits = [
+            { code: 'c', name: 'Bastoni', color: '#4a3728', icon: '🪵' },
+            { code: 'h', name: 'Coppe', color: '#c41e3a', icon: '🏆' },
+            { code: 'd', name: 'Denari', color: '#d4af37', icon: '💰' },
+            { code: 's', name: 'Spade', color: '#1a1a2e', icon: '⚔️' }
+        ];
+
+        const types = [
+            { code: '1', name: 'Ace', value: 'A' },
+            { code: '2', name: 'Two', value: '2' },
+            { code: '3', name: 'Three', value: '3' },
+            { code: '4', name: 'Four', value: '4' },
+            { code: '5', name: 'Five', value: '5' },
+            { code: '6', name: 'Six', value: '6' },
+            { code: '7', name: 'Seven', value: '7' },
+            { code: 'j', name: 'Jack', value: 'J' },
+            { code: 'q', name: 'Queen', value: 'Q' },
+            { code: 'k', name: 'King', value: 'K' }
+        ];
+
+        function generateCardSVG(type, suit) {
+            const isRed = suit.code === 'h' || suit.code === 'd';
+            const color = isRed ? '#c41e3a' : '#1a1a2e';
+            const suitColor = suit.color;
+            
+            return `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100" height="140" viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg">
+    <!-- Card Background -->
+    <rect width="100" height="140" rx="8" fill="white" stroke="#ddd" stroke-width="1"/>
+    
+    <!-- Corner Index -->
+    <text x="12" y="28" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${color}">${type.value}</text>
+    <text x="12" y="48" font-family="Arial, sans-serif" font-size="16" fill="${suitColor}">${suit.icon}</text>
+    
+    <!-- Center Suit Symbol (Large) -->
+    <text x="50" y="80" font-family="Arial, sans-serif" font-size="50" text-anchor="middle" fill="${suitColor}" opacity="0.8">${suit.icon}</text>
+    
+    <!-- Bottom Corner (Rotated) -->
+    <text x="88" y="112" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="${color}" text-anchor="end" transform="rotate(180 88 112)">${type.value}</text>
+    <text x="88" y="92" font-family="Arial, sans-serif" font-size="16" fill="${suitColor}" text-anchor="end" transform="rotate(180 88 92)">${suit.icon}</text>
+    
+    <!-- Decorative Border -->
+    <rect x="5" y="5" width="90" height="130" rx="5" fill="none" stroke="${suitColor}" stroke-width="1" opacity="0.3"/>
+</svg>`;
+        }
+
+        function downloadAllCards() {
+            suits.forEach(suit => {
+                types.forEach(type => {
+                    const svg = generateCardSVG(type, suit);
+                    const blob = new Blob([svg], { type: 'image/svg+xml' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${type.code}${suit.code}.svg`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            });
+        }
+
+        // Display preview
+        const cardGrid = document.getElementById('cardGrid');
+        suits.forEach(suit => {
+            types.forEach(type => {
+                const svg = generateCardSVG(type, suit);
+                const cardDiv = document.createElement('div');
+                cardDiv.className = 'card-preview';
+                cardDiv.innerHTML = `
+                    ${svg}
+                    <p>${type.name} of ${suit.name}</p>
+                `;
+                cardGrid.appendChild(cardDiv);
+            });
+        });
+    </script>
+</body>
+</html>
