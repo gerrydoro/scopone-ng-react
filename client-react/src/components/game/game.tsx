@@ -1,13 +1,11 @@
-import React, { FC, useContext, useEffect, useState } from "react";
-
-import { Switch, Route, useHistory } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import { ServerContext } from "../../context/server-context";
 import { SignIn } from "../sign-in/sign-in";
 import { switchMap, tap } from "rxjs/operators";
 import { merge } from "rxjs";
 import { PlayerState } from "../../../../scopone-rx-service/src/model/player";
-import { Card, CardContent, CardHeader } from "@material-ui/core";
 
 import "./game.css";
 import { PickGame } from "../pick-game/pick-game";
@@ -17,75 +15,73 @@ import { Error } from "../error/error";
 import { ErrorContext } from "../../context/error-context";
 import { Bye } from "../bye/bye";
 import { HandHistory } from "../hand-history/hand-history";
+import { Navigation } from "../navigation/navigation";
 
 const serverAddress = process.env.REACT_APP_SERVER_ADDRESS;
 
-// we define a type for the state so that we can issue a single call to the update state function and
-// avoid so multiple execution of the render function
-// https://stackoverflow.com/questions/53574614/multiple-calls-to-state-updater-from-usestate-in-component-causes-multiple-re-re
 type GameReactState = {
   title: string;
   errorMsg?: string;
+  playerName?: string;
 };
 
-export const Game: FC = () => {
+export const Game = () => {
   const server = useContext(ServerContext);
   const errorService = useContext(ErrorContext);
 
   const [gameReactState, setGameReactState] = useState<GameReactState>({
-    title: "Scopone Table - sign in please",
+    title: "🎴 Scopone - Italian Card Game",
   });
 
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
-    console.log("=======>>>>>>>>>>>>  Use Effect run in Game");
+    console.log("=======> Game Component Effect run");
 
-    // force to go to home page when this component is first loaded
-    // this allows to go to home page even if a url with a route is typed into the address bar or the user refresh
-    // a page which represents a route
-    // see https://stackoverflow.com/questions/66791019/redirect-to-home-when-react-app-served-by-s3-is-called-with-url-containing-a-rou
-    history.push("/");
+    // Force to go to home page when this component is first loaded
+    navigate("/");
 
-    // navigate$ Observable manages navigation as a side effect when a Player successfully enters the osteria
+    // navigate$ Observable manages navigation as a side effect
     const navigate$ = server.playerEnteredOsteria$.pipe(
-      tap((player) => {
-        setGameReactState((prevState) => ({ ...prevState, errorMsg: null }));
+      tap((player: any) => {
+        setGameReactState((prevState) => ({
+          ...prevState,
+          errorMsg: undefined,
+          playerName: player.name,
+        }));
         switch (player.status) {
           case PlayerState.playerNotPlaying:
-            history.push("/pick-game");
+            navigate("/pick-game");
             break;
           case PlayerState.playerPlaying:
-            history.push("/hand");
+            navigate("/hand");
             break;
           case PlayerState.playerObservingGames:
-            history.push("/hand");
+            navigate("/hand");
             break;
           case PlayerState.playerLookingAtHandResult:
-            history.push("/hand-result");
+            navigate("/hand-result");
             break;
           default:
-            const errMsg = `State "${player.status}" is not expected - look at the console for more details`;
+            const errMsg = `State "${player.status}" is not expected`;
             console.error(errMsg);
         }
       })
     );
 
-    //
     const gameClosed$ = server.myCurrentGameClosed$.pipe(
-      tap(() => history.push("/bye"))
+      tap(() => navigate("/bye"))
     );
 
-    // error$ sets the errorMsg state variable as a side effect
     const error$ = errorService.error$.pipe(
-      tap((errorMsg) =>
+      tap((errorMsg: any) =>
         setGameReactState((prevState) => ({ ...prevState, errorMsg }))
       )
     );
 
-    // title$ sets the title as a side effect
     const _title$ = server.title$.pipe(
-      tap((newTitle) =>
+      tap((newTitle: string) =>
         setGameReactState((prevState) => ({ ...prevState, title: newTitle }))
       )
     );
@@ -94,7 +90,7 @@ export const Game: FC = () => {
       .connect(serverAddress)
       .pipe(switchMap(() => merge(navigate$, gameClosed$, error$, _title$)))
       .subscribe({
-        error: (err) => {
+        error: (err: any) => {
           console.log("Error while communicating with the server", err);
           setGameReactState((prevState) => ({
             ...prevState,
@@ -102,39 +98,78 @@ export const Game: FC = () => {
           }));
         },
       });
+
     return () => {
       console.log("Unsubscribe Game subscription");
       subscription.unsubscribe();
     };
-  }, [server, errorService, history]);
+  }, [server, errorService, navigate]);
+
+  const hideNavigation = ["/", "/error"].includes(location.pathname);
 
   return (
-    <>
-      <Card className="root" variant="outlined">
-        <CardHeader
-          title={gameReactState.title}
-          className="header"
-        ></CardHeader>
-        <CardContent>
-          <Switch>
-            <Route path="/" component={SignIn} exact />
-            <Route path="/pick-game" component={PickGame} />
-            <Route path="/hand" component={Hand} />
-            <Route path="/hand-result" component={HandResult} />
-            <Route path="/bye" component={Bye} />
-            <Route path="/hand-history" component={HandHistory} />
-            <Route component={Error} />
-          </Switch>
-        </CardContent>
-      </Card>
-      {gameReactState.errorMsg && (
-        <Card className="root" variant="outlined">
-          <CardHeader
-            title={gameReactState.errorMsg}
-            className="error"
-          ></CardHeader>
-        </Card>
-      )}
-    </>
+    <div className="game-container">
+      {/* Poker Table Background */}
+      <div className="poker-table-bg">
+        <div className="poker-table-felt"></div>
+        <div className="poker-table-edge"></div>
+      </div>
+
+      {/* Navigation Menu */}
+      {!hideNavigation && <Navigation playerName={gameReactState.playerName} />}
+
+      {/* Main Content */}
+      <div className="game-content">
+        <div className="game-card fade-in">
+          <div className="game-card-header">
+            <h1 className="game-card-title">{gameReactState.title}</h1>
+            {gameReactState.playerName && (
+              <span className="player-badge">
+                👤 {gameReactState.playerName}
+              </span>
+            )}
+          </div>
+          <div className="game-card-content">
+            <Routes>
+              <Route path="/" element={<SignIn />} />
+              <Route path="/pick-game" element={<PickGame />} />
+              <Route path="/hand" element={<Hand />} />
+              <Route path="/hand-result" element={<HandResult />} />
+              <Route path="/bye" element={<Bye />} />
+              <Route path="/hand-history" element={<HandHistory />} />
+              <Route path="*" element={<Error />} />
+            </Routes>
+          </div>
+        </div>
+
+        {/* Error Display */}
+        {gameReactState.errorMsg && (
+          <div className="error-toast fade-in">
+            <div className="error-toast-content">
+              <span className="error-icon">⚠️</span>
+              <span className="error-message">{gameReactState.errorMsg}</span>
+              <button
+                className="error-close"
+                onClick={() =>
+                  setGameReactState((prevState) => ({
+                    ...prevState,
+                    errorMsg: undefined,
+                  }))
+                }
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <footer className="game-footer">
+        <span>Version {process.env.REACT_APP_VERSION}</span>
+        <span className="hidden-mobile">•</span>
+        <span className="hidden-mobile">Scopone Card Game</span>
+      </footer>
+    </div>
   );
 };
