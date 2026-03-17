@@ -262,6 +262,59 @@ scopone-ng-react/
 - `.env.production` - Production
 - Key variable: `REACT_APP_SERVER_ADDRESS`
 
+### NixOS Module Configuration
+
+Both client NixOS modules support the `serverAddress` option:
+
+```nix
+# Angular Client
+services.scopone-client-ng = {
+  enable = true;
+  serverAddress = "wss://your-server-address/osteria";
+  # ... other options
+};
+
+# React Client
+services.scopone-client-react = {
+  enable = true;
+  serverAddress = "wss://your-server-address/osteria";
+  # ... other options
+};
+```
+
+For Caddy-based deployment, use the `import` approach in `/etc/nixos/apps/scopone.nix`:
+
+```nix
+{ config, pkgs, lib, inputs, ... }:
+
+let
+  # Angular client package
+  scopone-client-ng-pkg = import "${inputs.scopone-ng-react}/nixos-modules/client-ng.nix" {
+    lib = lib;
+    buildNpmPackage = pkgs.buildNpmPackage;
+    serverAddress = "wss://server-scopone.gerryd.myaddr.io/osteria";
+  };
+
+  # React client package
+  scopone-client-react-pkg = import "${inputs.scopone-ng-react}/nixos-modules/client-react.nix" {
+    lib = lib;
+    buildNpmPackage = pkgs.buildNpmPackage;
+    nodejs = pkgs.nodejs;
+    serverAddress = "wss://server-scopone.gerryd.myaddr.io/osteria";
+  };
+in
+{
+  services.caddy.virtualHosts =
+    # Angular client
+    (config.caddyLib.mkWebservers scopone-client-ng-pkg [ "scopone-ng.gerryd.it" ])
+    // (config.caddyLib.mkPrivateWebserver scopone-client-ng-pkg "scopone-ng")
+    
+    # React client
+    // (config.caddyLib.mkWebservers scopone-client-react-pkg [ "scopone.gerryd.it" ])
+    // (config.caddyLib.mkPrivateWebserver scopone-client-react-pkg "scopone");
+}
+```
+
 ## Deployment
 
 ### AWS Lambda (Serverless)
