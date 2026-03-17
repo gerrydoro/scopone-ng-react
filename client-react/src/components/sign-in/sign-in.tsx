@@ -1,30 +1,18 @@
 import React, { ChangeEvent, FC, useContext, useEffect, useState } from "react";
-import {
-  Button,
-  TextField,
-  Card,
-  CardHeader,
-  CardContent,
-  CardActions,
-} from "@material-ui/core";
-
-import "../style.css";
 import { ServerContext } from "../../context/server-context";
-import { useStyles } from "../style-material-ui";
 import { ErrorContext } from "../../context/error-context";
 import { tap } from "rxjs/operators";
+import "./sign-in.css";
 
 export const SignIn: FC = () => {
   const [playerName, setPlayerName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const server = useContext(ServerContext);
   const errorService = useContext(ErrorContext);
 
-  const classes = useStyles();
-
   useEffect(() => {
-    console.log("=======>>>>>>>>>>>>  Use Effect run in SignIn");
+    console.log("=======> SignIn Use Effect run");
 
-    // playerAlreadyInOsteria$ notifies if the Player is already in the Osteria and navigate to Error page
     const playerAlreadyInOsteria$ = server.playerIsAlreadyInOsteria$.pipe(
       tap((pName) => {
         errorService.setError(`Player "${pName}" is already in the Osteria`);
@@ -43,7 +31,7 @@ export const SignIn: FC = () => {
     setPlayerName(event.target.value);
   };
 
-  const keyPress = (e: { key: string }) => {
+  const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       enterOsteria();
     }
@@ -54,38 +42,79 @@ export const SignIn: FC = () => {
       errorService.setError("Please provide a name");
       return;
     }
+    setIsLoading(true);
     server.playerEntersOsteria(playerName);
   };
 
   return (
-    <Card>
-      {/* https://material-ui.com/customization/components/#overriding-styles-with-global-class-names */}
-      {/* <CardHeader title="Player" classes={{ title: "header" }}></CardHeader> */}
-      {/* https://material-ui.com/customization/components/#overriding-styles-with-class-names */}
-      <CardHeader title="Player" className="header"></CardHeader>
-      <CardContent>
-        <div className={classes.root}>
-          <TextField
-            id="standard-full-width"
-            label="Name"
-            style={{ margin: 8 }}
-            placeholder="Your name as player"
-            helperText="Use the same name if you loose session and want to riconnect"
-            fullWidth
-            margin="normal"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            onChange={handleChange}
-            onKeyPress={keyPress}
-          />
+    <div className="sign-in-container">
+      <div className="sign-in-card fade-in">
+        <div className="sign-in-header">
+          <div className="header-icon">👤</div>
+          <h2 className="sign-in-title">Welcome to Scopone</h2>
+          <p className="sign-in-subtitle">Enter your name to join the table</p>
         </div>
-      </CardContent>
-      <CardActions>
-        <Button size="small" onClick={enterOsteria}>
-          Enter
-        </Button>
-      </CardActions>
-    </Card>
+
+        <div className="sign-in-content">
+          <div className="input-group">
+            <label htmlFor="player-name" className="input-label">
+              Player Name
+            </label>
+            <input
+              id="player-name"
+              type="text"
+              className="input"
+              placeholder="Enter your name"
+              value={playerName}
+              onChange={handleChange}
+              onKeyPress={handleKeyPress}
+              disabled={isLoading}
+              autoFocus
+            />
+            <p className="input-hint">
+              💡 Use the same name to reconnect if you lose your session
+            </p>
+          </div>
+
+          <button
+            className="btn btn-primary btn-large"
+            onClick={enterOsteria}
+            disabled={isLoading || !playerName.trim()}
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-small"></span>
+                Joining...
+              </>
+            ) : (
+              <>
+                <span>🎴</span>
+                Enter Table
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Decorative elements */}
+        <div className="decorative-cards">
+          <div className="decorative-card card-1">🂡</div>
+          <div className="decorative-card card-2">🂱</div>
+          <div className="decorative-card card-3">🃁</div>
+        </div>
+      </div>
+
+      <div className="sign-in-info">
+        <div className="info-card">
+          <h3>🎮 How to Play</h3>
+          <ol>
+            <li>Enter your name to join the game</li>
+            <li>Create a new game or join an existing one</li>
+            <li>Wait for 4 players to start</li>
+            <li>Play your cards strategically</li>
+            <li>Win by capturing cards from the table</li>
+          </ol>
+        </div>
+      </div>
+    </div>
   );
 };

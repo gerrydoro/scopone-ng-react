@@ -13,93 +13,67 @@ interface ITableProps {
 }
 
 export const Table: FC<ITableProps> = ({ teams, currentPlayerName, cards }) => {
-  const playerName = (tNum: number, pNum: number) => {
-    let name = teams[tNum].Players[pNum] ? teams[tNum].Players[pNum].name : "-";
-    name = playerLeft(tNum, pNum) ? `${name} (left the Osteria)` : name;
-    name = isCurrentPlayer(tNum, pNum) ? `${name} (can play card)` : name;
+  const getPlayerName = (teamIndex: number, playerIndex: number) => {
+    const player = teams[teamIndex]?.Players[playerIndex];
+    if (!player) return "-";
+    let name = player.name;
+    if (player.status === PlayerState.playerLeftTheGame) {
+      name += " (left the Osteria)";
+    } else if (player.name === currentPlayerName) {
+      name += " (can play card)";
+    }
     return name;
   };
-  const playerLeft = (tNum: number, pNum: number) => {
-    return teams && teams[tNum].Players[pNum]
-      ? teams[tNum].Players[pNum].status === PlayerState.playerLeftTheGame
-      : false;
+
+  const isCurrentPlayer = (teamIndex: number, playerIndex: number) => {
+    return teams[teamIndex]?.Players[playerIndex]?.name === currentPlayerName;
   };
-  const isCurrentPlayer = (tNum: number, pNum: number) => {
-    return teams && teams[tNum].Players[pNum]
-      ? teams[tNum].Players[pNum].name === currentPlayerName
-      : false;
+
+  const playerLeft = (teamIndex: number, playerIndex: number) => {
+    return teams[teamIndex]?.Players[playerIndex]?.status === PlayerState.playerLeftTheGame;
   };
-  const marginLeft = (i: number) => {
-    return `${i * 12}%`;
+
+  const getPlayerClass = (baseClass: string, teamIndex: number, playerIndex: number) => {
+    let classes = `player ${baseClass}`;
+    if (playerLeft(teamIndex, playerIndex)) {
+      classes += " player-absent";
+    }
+    if (isCurrentPlayer(teamIndex, playerIndex)) {
+      classes += " current-player";
+    }
+    return classes;
+  };
+
+  const cardPosition = (index: number) => {
+    const angle = (index / (cards.length || 1)) * 2 * Math.PI;
+    const x = 50 + 20 * Math.cos(angle);
+    const y = 50 + 20 * Math.sin(angle);
+    return {
+      left: `${x}%`,
+      top: `${y}%`,
+      transform: `translate(-50%, -50%) rotate(${angle + Math.PI / 2}rad)`,
+    };
   };
 
   return (
-    <>
-      <div className="main">
-        <div className="table">
-          <div className="board">
-            <table className="players-table">
-              <tbody>
-                <tr className="table-row">
-                  <td></td>
-                  <td>
-                    <div
-                      className={`player player-3 ${
-                        playerLeft(1, 0) ? "player-absent" : ""
-                      } ${isCurrentPlayer(1, 0) ? "current-player" : ""}`}
-                    >
-                      {playerName(1, 0)}
-                    </div>
-                  </td>
-                  <td></td>
-                </tr>
-                <tr className="table-row">
-                  <td>
-                    <div
-                      className={`player player-1 ${
-                        playerLeft(0, 0) ? "player-absent" : ""
-                      } ${isCurrentPlayer(0, 0) ? "current-player" : ""}`}
-                    >
-                      {playerName(0, 0)}
-                    </div>
-                  </td>
-                  <td></td>
-                  <td>
-                    <div
-                      className={`player player-2 ${
-                        playerLeft(0, 1) ? "player-absent" : ""
-                      } ${isCurrentPlayer(0, 1) ? "current-player" : ""}`}
-                    >
-                      {playerName(0, 1)}
-                    </div>
-                  </td>
-                </tr>
-                <tr className="table-row">
-                  <td></td>
-                  <td>
-                    <div
-                      className={`player player-4 ${
-                        playerLeft(1, 1) ? "player-absent" : ""
-                      } ${isCurrentPlayer(1, 1) ? "current-player" : ""}`}
-                    >
-                      {playerName(1, 1)}
-                    </div>
-                  </td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
-            {cards?.map((card, i) => (
-              <Card
-                card={card}
-                style={{ marginLeft: marginLeft(i) }}
-                height="100"
-                key={`${card.suit}${card.type}`}
-              ></Card>
-            ))}
-          </div>
+    <div className="table-container">
+      <div className="table">
+        <div className="board">
+          <div className={getPlayerClass("player-1", 0, 0)}>{getPlayerName(0, 0)}</div>
+          <div className={getPlayerClass("player-2", 1, 0)}>{getPlayerName(1, 0)}</div>
+          <div className={getPlayerClass("player-3", 0, 1)}>{getPlayerName(0, 1)}</div>
+          <div className={getPlayerClass("player-4", 1, 1)}>{getPlayerName(1, 1)}</div>
+          
+          {cards?.map((card, i) => (
+            <Card
+              card={card}
+              style={cardPosition(i)}
+              height="80"
+              key={`${card.suit}${card.type}`}
+            ></Card>
+          ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };

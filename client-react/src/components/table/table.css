@@ -1,139 +1,140 @@
-.main {
-  width: 1000px;
-}
-
-.table {
-  background-color: green;
-  height: 300px;
-  /* width: 40%; */
-  /* border-radius: 50%; */
-  margin: 0 auto;
-  border: 1em solid black;
-}
-
-.board {
-  position: relative;
-  /* top: 40%; */
-  height: 100%;
-  /* left: 30%; */
-}
-.players-table {
-  width: 100%;
-  height: 100%;
-}
-.table-row {
-  /* height: 25%; */
-  text-align: center;
-}
-
-td {
-  width: 30%;
-}
-
-.player {
-  color: lightgray;
-  font-size: larger;
-}
-.player-1 {
-  float: left;
-}
-.player-2 {
-  float: right;
-}
-.player-3 {
-  vertical-align: text-top;
-  height: 100%;
-}
-.player-4 {
-  vertical-align: bottom;
-}
-
-/* https://html-online.com/articles/blinking-text-css-animation/ */
-.player-absent {
-  animation: player-absent-blink 1.2s infinite;
-}
-@keyframes player-absent-blink {
-  0% {
+.table-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    border-radius: 50%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .table {
+    position: relative;
+    background-color: #006400; /* Dark green felt */
+    border-radius: 50%;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    border: 20px solid #8B4513; /* Wooden edge */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.5);
+  }
+  
+  .board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+  }
+  
+  .player {
+    position: absolute;
     color: white;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px black;
   }
-  49% {
-    color: lightcoral;
+  
+  .player-1 {
+    top: 50%;
+    left: 5%;
+    transform: translateY(-50%);
   }
-  60% {
-    color: transparent;
+  
+  .player-2 {
+    top: 5%;
+    left: 50%;
+    transform: translateX(-50%);
   }
-  99% {
-    color: transparent;
+  
+  .player-3 {
+    top: 50%;
+    right: 5%;
+    transform: translateY(-50%);
   }
-  100% {
-    color: white;
+  
+  .player-4 {
+    bottom: 5%;
+    left: 50%;
+    transform: translateX(-50%);
   }
-}
-.current-player {
-  animation: current-player-blink 2.4s infinite;
-}
-@keyframes current-player-blink {
-  0% {
-    color: white;
+  
+  .player-absent {
+    animation: player-absent-blink 1.2s infinite;
   }
-  49% {
-    color: lightcyan;
+  
+  .current-player {
+    animation: current-player-blink 2.4s infinite;
   }
-  60% {
-    color: transparent;
+  
+  .table .card {
+    position: absolute;
+    width: 10%;
+    height: auto;
   }
-  99% {
-    color: transparent;
+  
+  /* Responsive styles */
+  @media (max-width: 768px) {
+    .table-container {
+      padding: 10px;
+    }
+  
+    .table {
+      border-width: 10px;
+    }
+  
+    .player {
+      font-size: 1em;
+    }
   }
-  100% {
-    color: lightcyan;
+  
+  @media (max-width: 480px) {
+    .table-container {
+      padding: 5px;
+    }
+  
+    .table {
+      border-width: 5px;
+    }
+  
+    .player {
+      font-size: 0.8em;
+    }
   }
-}
-
-.card {
-  position: absolute;
-  top: 25%;
-  left: 15%;
-  z-index: 9;
-  width: 10%;
-}
-.board .playing-card {
-  position: absolute;
-  top: 25%;
-  left: 15%;
-  z-index: 9;
-  width: 10%;
-}
-
-.card-small {
-  border: 0.2em solid black;
-  border-radius: 10%;
-  height: 80px;
-  width: 56px; /*70% of height*/
-  margin-right: 5px;
-  float: left;
-  background-color: white;
-}
-
-.card-text {
-  margin: 0;
-  margin-top: 15%;
-  text-align: center;
-  font-size: 1.5em;
-  font-weight: bold;
-  padding: 0;
-}
-
-.card-img {
-  text-align: center;
-  margin: 0;
-  font-size: 2em;
-}
-
-.red {
-  color: red;
-}
-
-.black {
-  color: black;
-}
+  
+  @keyframes player-absent-blink {
+    0% {
+      color: white;
+    }
+    49% {
+      color: lightcoral;
+    }
+    60% {
+      color: transparent;
+    }
+    99% {
+      color: transparent;
+    }
+    100% {
+      color: white;
+    }
+  }
+  
+  @keyframes current-player-blink {
+    0% {
+      color: white;
+    }
+    49% {
+      color: lightcyan;
+    }
+    60% {
+      color: transparent;
+    }
+    99% {
+      color: transparent;
+    }
+    100% {
+      color: lightcyan;
+    }
+  }
+  
