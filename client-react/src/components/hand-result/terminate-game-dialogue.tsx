@@ -5,7 +5,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-} from "@material-ui/core";
+} from "@mui/material";
 import { TerminateGameState } from "./hand-result";
 
 export const TerminateDialogue: FC<TerminateGameState> = (props) => {

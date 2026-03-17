@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@material-ui/core";
+import { Card, CardContent, CardHeader } from "@mui/material";
 import React, { FC } from "react";
 import { Card as CardObj } from "../../../../scopone-rx-service/src/model/card";
 import { Card as PlayingCard } from "../card/card";

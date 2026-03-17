@@ -7,7 +7,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 import { merge } from "rxjs";
 import { tap } from "rxjs/operators";
 import { ServerContext } from "../../context/server-context";

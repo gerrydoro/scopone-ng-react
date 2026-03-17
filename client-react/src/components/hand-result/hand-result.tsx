@@ -5,7 +5,7 @@ import {
   CardContent,
   CardHeader,
   DialogActions,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import { ServerContext } from "../../context/server-context";
 import { Card as CardObj } from "../../../../scopone-rx-service/src/model/card";

@@ -9,9 +9,9 @@ import {
   TableHead,
   TableRow,
   Typography,
-} from "@material-ui/core";
-import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
+} from "@mui/material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { CardPlay } from "../../../../scopone-rx-service/src/model/player-view";
 import { Card } from "../card/card";
 

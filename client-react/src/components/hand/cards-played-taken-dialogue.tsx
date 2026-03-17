@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Dialog, DialogContent } from "@material-ui/core";
+import { Dialog, DialogContent } from "@mui/material";
 import { Cards } from "../cards/cards";
 import { CardsPlayedTakenReactState } from "./hand";
 

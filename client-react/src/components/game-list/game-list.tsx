@@ -6,7 +6,7 @@ import {
   List,
   ListItem,
   ListItemText,
-} from "@material-ui/core";
+} from "@mui/material";
 
 import React, { FC, useContext, useEffect, useState } from "react";
 import { ServerContext } from "../../context/server-context";
