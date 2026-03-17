@@ -1,41 +1,44 @@
 {
   "name": "client-react",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-router-dom": "^5.2.0",
-    
-    "web-vitals": "^1.0.1",
-    "rxjs": "~6.5.4"
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^6.4.6",
+    "@mui/material": "^6.4.6",
+    "@mui/styles": "^6.4.6",
+    "npm-check-updates": "^19.6.3",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-router-dom": "^7.13.1",
+    "rxjs": "^7.8.2",
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@craco/craco": "^6.4.3",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/chai": "^4.2.11",
-    "@types/jest": "^26.0.15",
-    "@types/mocha": "^9.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^17.0.0",
-    "@types/react-dom": "^17.0.0",
-    "@types/react-router-dom": "^5.1.7",
-    "chai": "^4.2.0",
-    "craco-babel-loader": "^1.0.3",
-    "mocha": "^9.1.3",
-    "react-scripts": "4.0.3",
-    "ts-node": "^8.3.0",
-    "typescript": "^4.1.2"
+    "@craco/craco": "^7.1.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/chai": "^5.2.3",
+    "@types/jest": "^30.0.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.32",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "chai": "^6.2.2",
+    "craco-babel-loader": "^1.0.4",
+    "mocha": "^11.7.5",
+    "react-scripts": "^5.0.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "upgrade": "ncu -u && npm install --legacy-peer-deps"
   },
   "eslintConfig": {
     "extends": [
