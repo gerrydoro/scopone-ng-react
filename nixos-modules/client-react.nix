@@ -1,17 +1,19 @@
-{ lib
-, buildNpmPackage
-, nodejs
-, serverAddress ? "ws://localhost:65025/osteria"
+{
+  lib,
+  buildNpmPackage,
+  nodejs,
+  serverAddress ? "ws://localhost:65025/osteria",
 }:
 
 let
   scoponeRxServiceSrc = lib.cleanSourceWith {
     src = ../scopone-rx-service;
-    filter = path: type:
+    filter =
+      path: type:
       let
         baseName = baseNameOf (toString path);
       in
-        !(lib.hasPrefix "." baseName);
+      !(lib.hasPrefix "." baseName);
   };
 in
 buildNpmPackage rec {
@@ -20,11 +22,12 @@ buildNpmPackage rec {
 
   src = lib.cleanSourceWith {
     src = ../client-react;
-    filter = path: type:
+    filter =
+      path: type:
       let
         baseName = baseNameOf (toString path);
       in
-        !(lib.hasPrefix "." baseName && baseName != ".env");
+      !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
   postPatch = ''
@@ -119,7 +122,11 @@ buildNpmPackage rec {
     CRACOEOF
   '';
 
-  npmDepsHash = "sha256-JTzTOnKIstTkNVKN26YsqXUca2QGu6W7e5luSHFvy2Y=";
+  npmDepsHash = "sha256-6TS+A+CTUrxqpBzAaJElOaeASo2M8nBR1JZVNUBc8ho=";
+  npmDepsFetcherVersion = 2;
+  makeCacheWritable = true;
+  npmFlags = [ "--legacy-peer-deps" ];
+  enableParallelBuilding = true;
 
   # Use legacy OpenSSL provider for React 17 compatibility
   env.NODE_OPTIONS = "--openssl-legacy-provider";
