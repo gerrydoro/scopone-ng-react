@@ -1,6 +1,6 @@
 import React, { FC, useContext, useEffect } from "react";
 
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { tap } from "rxjs/operators";
 import { ErrorContext } from "../../context/error-context";
 
@@ -13,7 +13,7 @@ export const PickGame: FC = () => {
   const server = useContext(ServerContext);
   const errorService = useContext(ErrorContext);
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log("=======>>>>>>>>>>>>  Use Effect run in PickGame");
@@ -23,8 +23,8 @@ export const PickGame: FC = () => {
       tap((game) => {
         errorService.setError(null);
         game.state !== GameState.GameClosed
-          ? history.push("/hand")
-          : history.push("/hand-result");
+          ? navigate("/hand")
+          : navigate("/hand-result");
       })
     );
 
@@ -34,7 +34,7 @@ export const PickGame: FC = () => {
       console.log("Unsubscribe PickGame subscription");
       subscription.unsubscribe();
     };
-  }, [server, errorService, history]);
+  }, [server, errorService, navigate]);
 
   return (
     <>

@@ -11,7 +11,7 @@ import { ServerContext } from "../../context/server-context";
 import { Card as CardObj } from "../../../../scopone-rx-service/src/model/card";
 import { Cards } from "../cards/cards";
 import { tap } from "rxjs/operators";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { TerminateDialogue } from "./terminate-game-dialogue";
 
 // we define a type for the state so that we can issue a single call to the update state function and
@@ -33,7 +33,7 @@ export type TerminateGameState = {
 
 export const HandResult: FC = () => {
   const server = useContext(ServerContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [handResultState, setHandResultState] = useState<HandResultState>();
 
@@ -69,7 +69,7 @@ export const HandResult: FC = () => {
 
   const handleContinue = () => {
     server.newHand();
-    history.push("/hand");
+    navigate("/hand");
   };
   const handleTerminateGame = () => {
     const handleTerminateGame = () => {
@@ -84,7 +84,7 @@ export const HandResult: FC = () => {
     });
   };
   const handleViewHistory = () => {
-    history.push("/hand-history");
+    navigate("/hand-history");
   };
 
   return (

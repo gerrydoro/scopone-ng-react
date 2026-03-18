@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import React, { FC, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { interval, merge } from "rxjs";
 import { delayWhen, share, switchMap, tap } from "rxjs/operators";
 import { ServerContext } from "../../context/server-context";
@@ -49,7 +49,7 @@ export type CardsTakeableReactState = {
 
 export const Hand: FC = () => {
   const server = useContext(ServerContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [handReactState, setHandReactState] = useState<HandReactState>({
     playerCards: [],
@@ -154,7 +154,7 @@ export const Hand: FC = () => {
     // showing the last cards played and taken before navigating to the "/hand-result" page
     const handClosed$ = server.handClosed$.pipe(
       switchMap(() => cardPlayedAndCardsTakenFromTable$),
-      tap(() => history.push("/hand-result"))
+      tap(() => navigate("/hand-result"))
     );
 
     const enablePlay$ = server.enablePlay$.pipe(
@@ -177,7 +177,7 @@ export const Hand: FC = () => {
       console.log("Unsubscribe Hand subscription");
       subscription.unsubscribe();
     };
-  }, [server, history]);
+  }, [server, navigate]);
 
   const start = () => {
     server.newHand();
