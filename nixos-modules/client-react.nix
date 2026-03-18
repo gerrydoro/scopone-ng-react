@@ -18,7 +18,7 @@ let
 in
 buildNpmPackage rec {
   pname = "scopone-client-react";
-  version = "0.1.6";
+  version = "0.2.1";
 
   src = lib.cleanSourceWith {
     src = ../client-react;
