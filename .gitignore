@@ -46,3 +46,9 @@ serverless-cd/.DS_Store
 todo.txt
 server/Dockerfile-minimal-mongo__
 server/command-install-go-server.md
+
+# Node.js dependencies
+node_modules/
+client-ng/node_modules/
+client-react/node_modules/
+scopone-rx-service/node_modules/
