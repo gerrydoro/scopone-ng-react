@@ -104,7 +104,7 @@ export const Game = () => {
       console.log("Unsubscribe Game subscription");
       subscription.unsubscribe();
     };
-  }, [server, errorService, navigate]);
+  }, [server, errorService, navigate, settings.serverAddress]);
 
   const hideNavigation = ["/", "/error"].includes(location.pathname);
 
