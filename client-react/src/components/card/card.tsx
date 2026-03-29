@@ -37,6 +37,7 @@ interface ICardProps {
   showBack?: boolean;
   label?: string;
   className?: string;
+  height?: string | number;
 }
 
 export const Card: FC<ICardProps> = (props) => {

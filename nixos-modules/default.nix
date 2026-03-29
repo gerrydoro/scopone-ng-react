@@ -1,6 +1,7 @@
-{ lib
-, buildGoModule
-, go_1_24
+{
+  lib,
+  buildGoModule,
+  go_1_24,
 }:
 
 buildGoModule rec {
@@ -11,16 +12,15 @@ buildGoModule rec {
 
   src = lib.cleanSourceWith {
     src = ../server;
-    filter = path: type:
+    filter =
+      path: type:
       let
         relPath = lib.removePrefix (toString ../server + "/") (toString path);
       in
-        !(lib.hasPrefix "." (baseNameOf relPath) &&
-          relPath != "go.mod" &&
-          relPath != "go.sum");
+      !(lib.hasPrefix "." (baseNameOf relPath) && relPath != "go.mod" && relPath != "go.sum");
   };
 
-  vendorHash = "sha256-RGiTwSGf3G/x7MmUP/CDDMMXY5En2E/k7m+h6OCsbaw=";
+  vendorHash = "sha256-nqsHINT9MUH7w4Atmeiz89V5r1xJHqyrcfcObg9hfG4=";
 
   subPackages = [ "src/cmd/scopone-in-memory-only" ];
 

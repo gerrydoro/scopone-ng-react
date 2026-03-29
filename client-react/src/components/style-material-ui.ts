@@ -1,7 +1,7 @@
 import { makeStyles } from "@mui/styles";
-import { alpha } from "@mui/material/styles";
+import { alpha, Theme } from "@mui/material/styles";
 
-export const useStyles = makeStyles((theme) => ({
+export const useStyles = makeStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexWrap: "wrap",

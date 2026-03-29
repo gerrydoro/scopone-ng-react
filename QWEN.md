@@ -10,11 +10,11 @@ The project is a full-stack application with the following components:
 
 | Component | Technology | Location | Description |
 |-----------|------------|----------|-------------|
-| **Server** | Go 1.18+ | `server/` | WebSocket server with MongoDB support (or in-memory mode) |
-| **Client (Angular)** | Angular 19 | `client-ng/` | Angular-based web client |
-| **Client (React)** | React 17 | `client-react/` | React-based web client |
+| **Server** | Go 1.24 | `server/` | WebSocket server with MongoDB support (or in-memory mode) |
+| **Client (Angular)** | Angular 19.2 | `client-ng/` | Angular-based web client |
+| **Client (React)** | React 19.2 | `client-react/` | React-based web client |
 | **Shared Service** | TypeScript/RxJS | `scopone-rx-service/` | Shared service library used by both clients |
-| **CI/CD** | Serverless Framework | `serverless-cd/` | Deployment scripts for AWS Lambda and S3 |
+| **CI/CD** | Serverless Framework v4 | `serverless-cd/` | Deployment scripts for AWS Lambda and S3 |
 | **NixOS Modules** | Nix/NixOS | `nixos-modules/` | Nix packages and NixOS modules for deployment |
 
 ### Communication
@@ -166,16 +166,22 @@ npm run test
 
 ### Go Server
 
-- **Go Version**: 1.18+ (Nix uses go_1_24)
+- **Go Version**: 1.24
 - **Module**: `go-scopone`
 - **Testing**: Standard Go testing with `go test`
 - **Static Analysis**: Uses `staticcheck` (config in `server/staticcheck.conf`)
+- **Key Dependencies**:
+  - `aws/aws-lambda-go` v1.50.0
+  - `aws/aws-sdk-go` v1.55.8
+  - `gorilla/websocket` v1.5.3
+  - `spf13/viper` v1.21.0
+  - `mongo-driver` v1.17.6
 
 ### TypeScript Clients & Service
 
-- **Angular Client**: TypeScript ~5.7, Angular 19
-- **React Client**: TypeScript ~4.1, React 17
-- **Shared Service**: TypeScript ~5.7, RxJS ~7.8
+- **Angular Client**: TypeScript 5.7.3, Angular 19.2.17
+- **React Client**: TypeScript 5.9.3, React 19.2.4
+- **Shared Service**: TypeScript 5.7.3, RxJS 7.8.2
 - **Testing**: 
   - Angular: Karma + Jasmine
   - React: Jest + Testing Library
@@ -215,11 +221,11 @@ scopone-ng-react/
 │   │   └── server/        # Core server logic
 │   ├── go.mod
 │   └── serverless.yml     # Serverless Framework config
-├── client-ng/             # Angular 19 client
+├── client-ng/             # Angular 19.2 client
 │   ├── src/
 │   ├── angular.json
 │   └── package.json
-├── client-react/          # React 17 client
+├── client-react/          # React 19.2 client
 │   ├── src/
 │   ├── craco.config.js
 │   └── package.json
@@ -361,17 +367,17 @@ bash build-deploy-react-front-end.sh
 | `scopone-workspace.code-workspace` | VSCode workspace configuration |
 | `server/go.mod` | Go module definition |
 | `nixos-modules/README.md` | Detailed NixOS module documentation |
-| `NIX_MODULES_PROGRESS.md` | Progress tracking for Nix module development |
+| `server/readme.md` | Server implementation details |
+| `AGENT.md` | Instructions for AI agents working on this project |
 
 ## Known Issues
 
 1. **SSL Certificate Errors**: Caddy may fail to obtain SSL certificates for domains without proper DNS configuration
-2. **Angular Client**: Currently less maintained than React client (Angular was upgraded to v19, but React is the primary client)
-3. **Go Dependencies**: Server uses Go 1.18 in `go.mod`, but Nix builds use go_1_24 for compatibility
+2. **Angular Client**: Currently less maintained than React client (both upgraded to latest versions)
+3. **Serverless Framework v4**: Breaking changes from v2 may require configuration updates
 
 ## Related Documentation
 
-- [NixOS Module Progress](./NIX_MODULES_PROGRESS.md) - Tracks Nix module development status
 - [NixOS Module README](./nixos-modules/README.md) - Detailed server module documentation
 - [Server README](./server/readme.md) - Server implementation details
 - [Agent Instructions](./AGENT.md) - Instructions for AI agents working on this project

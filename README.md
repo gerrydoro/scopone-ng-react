@@ -39,8 +39,8 @@ The Server is a Go application with the server code contained in the `server` fo
 
 The client code is in 2 versions
 
-- Angular (currently at version 9) contained in the `client-ng` folder
-- React (currently at version 17) contained in the `client-react` folder
+- Angular (currently at version 19) contained in the `client-ng` folder
+- React (currently at version 19) contained in the `client-react` folder
 
 Client and Server use WebSocket protocol to communicate.
 
@@ -199,7 +199,7 @@ Both clients, the Angular and the React one, share the same service, **ScoponeSe
 
 ## Angular Client
 
-The Client is an Angular application, currently using version 9 of the framework.
+The Client is an Angular application, currently using version 19 of the framework.
 
 The code is stored in the `client-ng` folder,
 
@@ -224,11 +224,21 @@ To build the application for deployment to production, run the command
 
 ## React Client
 
-The Client is a React application, currently using version 17 of the library.
+The Client is a React application, currently using version 19 of the library.
 
 The code is store in the `client-react` folder.
 
-The project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). Read more details in the `readme.md` file in the folder of the React client.
+The project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and uses [CRACO](https://github.com/gsoft-inc/craco) for custom webpack configuration. Read more details in the `README.md` file in the folder of the React client.
+
+### Key Dependencies (Latest Versions)
+
+- **React**: 19.2.4
+- **React DOM**: 19.2.4
+- **React Router DOM**: 7.13.1
+- **MUI Material**: 7.3.9
+- **MUI Icons**: 7.3.9
+- **RxJS**: 7.8.2
+- **TypeScript**: 5.9.3
 
 ### Configuration of the connection with the server for the React client
 

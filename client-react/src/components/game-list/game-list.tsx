@@ -4,7 +4,7 @@ import {
   DialogActions,
   DialogTitle,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
 } from "@mui/material";
 
@@ -84,9 +84,8 @@ export const GameList: FC = () => {
       <div className="root">
         <List component="nav">
           {gameListReactState.games.map((game, i) => (
-            <ListItem
+            <ListItemButton
               key={game.name}
-              button
               onClick={(event) => handleSelect(game)}
             >
               <ListItemText
@@ -94,14 +93,14 @@ export const GameList: FC = () => {
                 primaryTypographyProps={
                   game.canBeObservedOnly
                     ? {
-                        style: {
-                          color: "red",
-                        },
-                      }
+                      style: {
+                        color: "red",
+                      },
+                    }
                     : {}
                 }
               />
-            </ListItem>
+            </ListItemButton>
           ))}
         </List>
       </div>
@@ -109,11 +108,10 @@ export const GameList: FC = () => {
         open={gameListReactState.openConfirmationDialogue}
         onClose={handleDialogueClose}
       >
-        <DialogTitle>{`Confirm to join ${
-          gameListReactState.selectedGame
-            ? gameListReactState.selectedGame.name
-            : ""
-        }?`}</DialogTitle>
+        <DialogTitle>{`Confirm to join ${gameListReactState.selectedGame
+          ? gameListReactState.selectedGame.name
+          : ""
+          }?`}</DialogTitle>
         <DialogActions>
           <Button onClick={handleConfirm} color="primary">
             OK

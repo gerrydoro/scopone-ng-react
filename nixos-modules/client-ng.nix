@@ -1,6 +1,7 @@
-{ lib
-, buildNpmPackage
-, serverAddress ? "ws://localhost:65025/osteria"
+{
+  lib,
+  buildNpmPackage,
+  serverAddress ? "ws://localhost:65025/osteria",
 }:
 
 buildNpmPackage rec {
@@ -9,14 +10,15 @@ buildNpmPackage rec {
 
   src = lib.cleanSourceWith {
     src = ../client-ng;
-    filter = path: type:
+    filter =
+      path: type:
       let
         baseName = baseNameOf (toString path);
       in
-        !(lib.hasPrefix "." baseName && baseName != ".env");
+      !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
-  npmDepsHash = "sha256-0akXGp8wBPk3YAQRgZXM9KVqmF3tErG1BSG5DkRaG1M=";
+  npmDepsHash = "sha256-GgKAtvnGpI/B7aEACzZ+A1XszFvojROjt+30Jq9MhiI=";
   npmFlags = [ "--legacy-peer-deps" ];
 
   # Copy scopone-rx-service and create environment.prod.ts

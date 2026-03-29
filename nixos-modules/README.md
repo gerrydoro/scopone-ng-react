@@ -201,6 +201,30 @@ To test changes to the NixOS module, run these commands from the repository root
    }'
    ```
 
+## Package Versions
+
+The NixOS modules build the following packages with their latest dependencies:
+
+### Server (Go)
+- Go 1.24
+- aws/aws-lambda-go v1.50.0
+- gorilla/websocket v1.5.3
+- spf13/viper v1.21.0
+- mongo-driver v1.17.6
+
+### Angular Client
+- Angular 19.2.17
+- Angular Material 19.2.17
+- RxJS 7.8.2
+- TypeScript 5.7.3
+
+### React Client
+- React 19.2.4
+- MUI Material 7.3.9
+- React Router 7.13.1
+- RxJS 7.8.2
+- TypeScript 5.9.3
+
 ## Troubleshooting
 
 ### Vendor Hash Mismatch

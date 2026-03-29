@@ -2,6 +2,41 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Latest Dependencies
+
+This client has been updated to the latest major versions of all core packages:
+
+### Core Framework
+
+| Package | Version | Description |
+|---------|---------|-------------|
+| **React** | 19.2.4 | Latest React with concurrent features |
+| **React DOM** | 19.2.4 | React DOM renderer |
+| **React Router DOM** | 7.13.1 | Latest routing library |
+| **MUI Material** | 7.3.9 | Material-UI component library |
+| **MUI Icons** | 7.3.9 | Material Design icons |
+| **RxJS** | 7.8.2 | Reactive Extensions for JavaScript |
+| **TypeScript** | 5.9.3 | Latest TypeScript |
+
+### Dev Dependencies
+
+| Package | Version |
+|---------|---------|
+| @testing-library/react | 16.3.2 |
+| @testing-library/jest-dom | 6.9.1 |
+| @testing-library/user-event | 14.6.1 |
+| @types/react | 19.2.14 |
+| @types/react-dom | 19.2.3 |
+| @types/node | 22.15.32 |
+| mocha | 11.7.5 |
+| chai | 6.2.2 |
+| ts-node | 10.9.2 |
+
+### Build Tools
+
+- **CRACO**: ^7.1.0 (Custom React App Configuration)
+- **react-scripts**: ^5.0.1
+
 If you install the required packages with the command `npm i` you can get a lot of security warnings about many vulnerabilities.
 
 According to the authors of `Create React App` these warnings can be ignored and the right way to run an audit is via the command `npm audit --production`.

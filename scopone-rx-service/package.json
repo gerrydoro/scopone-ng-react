@@ -1,17 +1,18 @@
 {
   "dependencies": {
-    "rxjs": "~7.8.0",
-    "tslib": "^2.6.0",
-    "ws": "^6.2.2"
+    "rxjs": "~7.8.2",
+    "tslib": "^2.8.1",
+    "ws": "^8.18.2"
   },
   "devDependencies": {
-    "@types/chai": "^4.2.11",
-    "@types/mocha": "^7.0.2",
-    "@types/node": "^22.0.0",
-    "chai": "^4.2.0",
-    "mocha": "^9.2.0",
-    "ts-node": "^8.3.0",
-    "typescript": "~5.7.0"
+    "@types/chai": "^4.3.20",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.32",
+    "@types/ws": "^8.18.1",
+    "chai": "^4.5.0",
+    "mocha": "^11.7.5",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.7.3"
   },
   "scripts": {
     "tsc": "tsc",
