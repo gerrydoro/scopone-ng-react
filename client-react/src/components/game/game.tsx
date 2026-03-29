@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 
 import { ServerContext } from "../../context/server-context";
+import { SettingsContext } from "../../context/settings-context";
 import { SignIn } from "../sign-in/sign-in";
 import { switchMap, tap } from "rxjs/operators";
 import { merge } from "rxjs";
@@ -16,7 +17,7 @@ import { ErrorContext } from "../../context/error-context";
 import { Bye } from "../bye/bye";
 import { HandHistory } from "../hand-history/hand-history";
 import { Navigation } from "../navigation/navigation";
-import { getServerAddress } from "../../helpers/server-address";
+import { Settings } from "../settings/settings";
 
 type GameReactState = {
   title: string;
@@ -26,6 +27,7 @@ type GameReactState = {
 
 export const Game = () => {
   const server = useContext(ServerContext);
+  const settings = useContext(SettingsContext);
   const errorService = useContext(ErrorContext);
 
   const [gameReactState, setGameReactState] = useState<GameReactState>({
@@ -86,7 +88,7 @@ export const Game = () => {
     );
 
     const subscription = server
-      .connect(getServerAddress())
+      .connect(settings.serverAddress)
       .pipe(switchMap(() => merge(navigate$, gameClosed$, error$, _title$)))
       .subscribe({
         error: (err: any) => {
@@ -136,6 +138,7 @@ export const Game = () => {
               <Route path="/hand-result" element={<HandResult />} />
               <Route path="/bye" element={<Bye />} />
               <Route path="/hand-history" element={<HandHistory />} />
+              <Route path="/settings" element={<Settings />} />
               <Route path="*" element={<Error />} />
             </Routes>
           </div>

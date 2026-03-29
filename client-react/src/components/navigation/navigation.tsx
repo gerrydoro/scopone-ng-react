@@ -43,6 +43,16 @@ export const Navigation: FC<NavigationProps> = ({ playerName }) => {
             ))}
           </div>
 
+          <div className="nav-actions">
+            <Link
+              to="/settings"
+              className={`nav-link nav-settings ${isActive("/settings") ? "active" : ""}`}
+              title="Server Settings"
+            >
+              <span className="nav-icon">⚙️</span>
+            </Link>
+          </div>
+
           {playerName && (
             <div className="nav-player">
               <span className="player-avatar">👤</span>
@@ -80,6 +90,18 @@ export const Navigation: FC<NavigationProps> = ({ playerName }) => {
               )}
             </Link>
           ))}
+
+          <Link
+            to="/settings"
+            className={`nav-mobile-link ${isActive("/settings") ? "active" : ""}`}
+            onClick={() => setMenuOpen(false)}
+          >
+            <span className="nav-icon">⚙️</span>
+            <span className="nav-label">Settings</span>
+            {isActive("/settings") && (
+              <span className="nav-active-indicator"></span>
+            )}
+          </Link>
 
           {playerName && (
             <div className="nav-mobile-player">

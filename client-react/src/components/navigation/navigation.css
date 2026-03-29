@@ -321,3 +321,31 @@
     width: 80%;
   }
 }
+
+/* Settings Button */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.nav-settings {
+  padding: var(--spacing-sm);
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+}
+
+.nav-settings:hover {
+  background: rgba(212, 175, 55, 0.2);
+  transform: rotate(30deg);
+}
+
+.nav-settings.active {
+  background: rgba(212, 175, 55, 0.3);
+}
+
+@media (max-width: 768px) {
+  .nav-actions {
+    display: none;
+  }
+}

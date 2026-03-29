@@ -5,6 +5,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 import "./App.css";
 import { Game } from "./components/game/game";
+import { SettingsProvider } from "./context/settings-context";
 
 // MUI v6 Theme
 const theme = createTheme({
@@ -32,15 +33,17 @@ const theme = createTheme({
 function App() {
   return (
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <div className="App">
-          <Game />
-        </div>
-        <span className="version-footer">
-          Version {process.env.REACT_APP_VERSION}
-        </span>
-      </ThemeProvider>
+      <SettingsProvider>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <div className="App">
+            <Game />
+          </div>
+          <span className="version-footer">
+            Version {process.env.REACT_APP_VERSION}
+          </span>
+        </ThemeProvider>
+      </SettingsProvider>
     </BrowserRouter>
   );
 }

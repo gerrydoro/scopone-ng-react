@@ -1,0 +1,68 @@
+.settings-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+.settings-card {
+  max-width: 600px;
+  width: 100%;
+  background: rgba(26, 26, 46, 0.95);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.settings-header {
+  background: linear-gradient(135deg, #2d5016 0%, #3d6b1f 100%);
+  color: white;
+  border-radius: 16px 16px 0 0 !important;
+}
+
+.settings-header .MuiCardHeader-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.settings-header .MuiCardHeader-subheader {
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 8px;
+}
+
+.settings-card .MuiCardContent-root {
+  padding: 24px;
+}
+
+.settings-card .MuiTextField-root {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+}
+
+.settings-card .MuiButton-root {
+  text-transform: none;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 8px 24px;
+}
+
+@media (max-width: 600px) {
+  .settings-container {
+    padding: 10px;
+  }
+
+  .settings-card {
+    border-radius: 12px;
+  }
+
+  .settings-header {
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  .settings-card .MuiButton-root {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
