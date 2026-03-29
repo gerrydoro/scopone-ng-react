@@ -38,3 +38,4 @@ export function getServerAddress(): string {
   // Default fallback for development
   return 'ws://server-localhost:65025/osteria';
 }
+// Build trigger
