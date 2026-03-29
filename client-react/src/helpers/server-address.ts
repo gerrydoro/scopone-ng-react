@@ -1,13 +1,20 @@
 /**
  * Get the WebSocket server address for the Scopone game server.
- * 
- * Priority:
- * 1. If REACT_APP_SERVER_ADDRESS is explicitly set, use it
- * 2. Otherwise, derive from current window location (for production)
- * 3. Fall back to localhost for development
+ *
+ * The server address is derived from the current browser location:
+ * - Same protocol (wss for https, ws for http)
+ * - Same port as the client
+ * - "server-" prefix added to the hostname
+ *
+ * Examples:
+ * - https://scopone.gerryd.myaddr.io/ → wss://server-scopone.gerryd.myaddr.io/osteria
+ * - https://bestscopone.it/ → wss://server-bestscopone.it/osteria
+ * - http://localhost:3000/ → ws://server-localhost:3000/osteria
+ *
+ * Can be overridden by setting REACT_APP_SERVER_ADDRESS environment variable.
  */
 export function getServerAddress(): string {
-  // Check if environment variable is explicitly set
+  // Check if environment variable is explicitly set (override)
   const envAddress = process.env.REACT_APP_SERVER_ADDRESS;
   if (envAddress && envAddress.trim() !== '') {
     return envAddress;
@@ -16,19 +23,18 @@ export function getServerAddress(): string {
   // In browser environment, derive from current location
   if (typeof window !== 'undefined' && window.location) {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const host = window.location.host;
-    
-    // For the main domain (scopone.gerryd.myaddr.io), connect to the server port
-    // The server runs on port 65025
-    if (host.includes('gerryd.myaddr.io') || host.includes('gerryd.it')) {
-      const serverHost = host.replace('scopone.', 'server-scopone.');
-      return `${protocol}//${serverHost}/osteria`;
-    }
-    
-    // Default: use same host as the client
-    return `${protocol}//${host}/osteria`;
+    const hostname = window.location.hostname;
+    const port = window.location.port;
+
+    // Add "server-" prefix to the hostname
+    const serverHostname = `server-${hostname}`;
+
+    // Include port if specified (omit for standard ports 80/443)
+    const serverPort = port ? `:${port}` : '';
+
+    return `${protocol}//${serverHostname}${serverPort}/osteria`;
   }
 
   // Default fallback for development
-  return 'ws://localhost:65025/osteria';
+  return 'ws://server-localhost:65025/osteria';
 }
