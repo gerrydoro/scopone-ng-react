@@ -16,8 +16,7 @@ import { ErrorContext } from "../../context/error-context";
 import { Bye } from "../bye/bye";
 import { HandHistory } from "../hand-history/hand-history";
 import { Navigation } from "../navigation/navigation";
-
-const serverAddress = process.env.REACT_APP_SERVER_ADDRESS;
+import { getServerAddress } from "../../helpers/server-address";
 
 type GameReactState = {
   title: string;
@@ -87,7 +86,7 @@ export const Game = () => {
     );
 
     const subscription = server
-      .connect(serverAddress)
+      .connect(getServerAddress())
       .pipe(switchMap(() => merge(navigate$, gameClosed$, error$, _title$)))
       .subscribe({
         error: (err: any) => {

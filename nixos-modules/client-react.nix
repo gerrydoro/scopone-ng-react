@@ -2,7 +2,7 @@
   lib,
   buildNpmPackage,
   nodejs,
-  serverAddress ? "ws://localhost:65025/osteria",
+  serverAddress ? null, # null = use dynamic detection from browser domain
 }:
 
 let
@@ -36,9 +36,17 @@ buildNpmPackage rec {
     cp -r ${scoponeRxServiceSrc}/* ../scopone-rx-service/
 
     # Create .env.production with configurable server address
-    cat > .env.production << ENVFILE
-    REACT_APP_SERVER_ADDRESS=${serverAddress}
-    ENVFILE
+    # If serverAddress is null/empty, leave it empty to use dynamic detection
+    ${lib.optionalString (serverAddress != null) ''
+      cat > .env.production << ENVFILE
+      REACT_APP_SERVER_ADDRESS=${serverAddress}
+      ENVFILE
+    ''}
+    ${lib.optionalString (serverAddress == null) ''
+      cat > .env.production << ENVFILE
+      # Empty - will use dynamic server address detection from browser domain
+      ENVFILE
+    ''}
 
     # Update craco config to use the correct path and configure TypeScript
     cat > craco.config.js << 'CRACOEOF'

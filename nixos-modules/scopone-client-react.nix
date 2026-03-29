@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   cfg = config.services.scopone-client-react;
@@ -33,9 +38,15 @@ in
     };
 
     serverAddress = lib.mkOption {
-      type = lib.types.str;
-      default = "ws://localhost:65025/osteria";
-      description = "The WebSocket address of the Scopone server.";
+      type = lib.types.nullOr lib.types.str;
+      default = null; # null = use dynamic detection from browser domain
+      description = ''
+        The WebSocket address of the Scopone server.
+        If null (default), the client will automatically detect the server
+        address from the browser's current domain.
+        Set to a specific address like "ws://localhost:65025/osteria" or
+        "wss://scopone.gerryd.myaddr.io/osteria" to override.
+      '';
     };
 
     useNginx = lib.mkOption {
@@ -51,7 +62,10 @@ in
 
       virtualHosts."${cfg.host}" = {
         listen = [
-          { addr = cfg.host; port = cfg.port; }
+          {
+            addr = cfg.host;
+            port = cfg.port;
+          }
         ];
 
         root = cfg.package;
