@@ -18,7 +18,7 @@ let
 in
 buildNpmPackage rec {
   pname = "scopone-client-react";
-  version = "0.2.2";
+  version = "0.2.0";
 
   src = lib.cleanSourceWith {
     src = ../client-react;
@@ -130,7 +130,7 @@ buildNpmPackage rec {
     CRACOEOF
   '';
 
-  npmDepsHash = "sha256-yRzrqGJBHhAi6JUFncJbo5irBdtDd23FB8pj6IxytCo=";
+  npmDepsHash = "sha256-gGt7Luhp2EK5MTYVSQpCLGAzaoq42sT6X0xHMB1Pb6o=";
   npmDepsFetcherVersion = 2;
   makeCacheWritable = true;
   npmFlags = [ "--legacy-peer-deps" ];
