@@ -130,7 +130,7 @@ buildNpmPackage rec {
     CRACOEOF
   '';
 
-  npmDepsHash = "sha256-gGt7Luhp2EK5MTYVSQpCLGAzaoq42sT6X0xHMB1Pb6o=";
+  npmDepsHash = "sha256-yRzrqGJBHhAi6JUFncJbo5irBdtDd23FB8pj6IxytCo=";
   npmDepsFetcherVersion = 2;
   makeCacheWritable = true;
   npmFlags = [ "--legacy-peer-deps" ];
