@@ -11,6 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useSettings } from "../../context/settings-context";
+import "./settings.css";
 
 export const Settings: React.FC = () => {
   const { serverAddress, setServerAddress, resetServerAddress } = useSettings();
