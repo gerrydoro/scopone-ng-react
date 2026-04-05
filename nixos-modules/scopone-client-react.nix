@@ -10,19 +10,9 @@ let
 
   # The absolute path to the built static files inside the Nix store.
   # This is the value web servers (caddy, nginx, …) use as their root.
-  # It automatically changes when the package is rebuilt, triggering a
-  # service reload.
+  # It automatically changes when the package is rebuilt, which causes
+  # the web server service to be reloaded by NixOS.
   clientRoot = "${cfg.package}";
-
-  # ---------- Caddyfile fragment ----------
-  caddyfile = pkgs.writeText "scopone-client-react.Caddyfile" ''
-    ${cfg.host}:${toString cfg.port} {
-      root * ${clientRoot}
-      encode gzip
-      try_files {path} /index.html
-      file_server
-    }
-  '';
 in
 {
   meta.maintainers = [ lib.maintainers.gerrydoro ];
@@ -69,6 +59,16 @@ in
       default = false;
       description = "Use Nginx to serve the static files.";
     };
+
+    # --- Exposed path for external use ---
+    # Read-only: the Nix store path where the built static files live.
+    # Useful for custom caddy/nginx configs defined outside this module.
+    clientRoot = lib.mkOption {
+      type = lib.types.str;
+      default = clientRoot;
+      readOnly = true;
+      description = "The Nix store path containing the built static files.";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -82,10 +82,19 @@ in
     # ===== Caddy =====
     services.caddy = lib.mkIf cfg.useCaddy {
       enable = true;
-      enableReload = true;
-      # The Caddyfile references `clientRoot` which changes on every rebuild.
-      # NixOS will automatically reload Caddy when the path changes.
-      configFile = caddyfile;
+      # Using virtualHosts (not configFile) so this plays nicely with
+      # other caddy configuration that may exist elsewhere.
+      # Because `clientRoot` is embedded here, any rebuild of the client
+      # package changes this derivation, which triggers a caddy reload.
+      virtualHosts."scopone-client" = {
+        extraConfig = ''
+          bind ${cfg.host}
+          root * ${clientRoot}
+          encode gzip
+          try_files {path} /index.html
+          file_server
+        '';
+      };
     };
 
     # ===== Nginx =====
