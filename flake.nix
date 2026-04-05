@@ -14,7 +14,7 @@
       {
         packages.scopone-server = pkgs.callPackage ./nixos-modules/default.nix { };
         packages.scopone-client-ng = pkgs.callPackage ./nixos-modules/client-ng.nix { };
-        packages.scopone-client-react = pkgs.callPackage ./nixos-modules/client-react.nix { nodejs = pkgs.nodejs_18; };
+        packages.scopone-client-react = pkgs.callPackage ./nixos-modules/client-react.nix { };
         defaultPackage = self.packages.${system}.scopone-server;
       }
     ) // {
