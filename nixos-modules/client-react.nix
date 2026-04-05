@@ -1,133 +1,83 @@
-{
-  lib,
-  buildNpmPackage,
-  nodejs,
-  serverAddress ? null, # null = use dynamic detection from browser domain
+{ lib
+, buildNpmPackage
+, nodejs
+, serverAddress ? null
 }:
 
 let
   scoponeRxServiceSrc = lib.cleanSourceWith {
     src = ../scopone-rx-service;
-    filter =
-      path: type:
+    filter = path: type:
       let
         baseName = baseNameOf (toString path);
       in
       !(lib.hasPrefix "." baseName);
   };
 in
-buildNpmPackage rec {
+buildNpmPackage {
   pname = "scopone-client-react";
   version = "0.2.0";
 
   src = lib.cleanSourceWith {
     src = ../client-react;
-    filter =
-      path: type:
+    filter = path: type:
       let
         baseName = baseNameOf (toString path);
       in
       !(lib.hasPrefix "." baseName && baseName != ".env");
   };
 
+  nativeBuildInputs = [ nodejs ];
+
+  # Copy scopone-rx-service into the build tree and configure environment
   postPatch = ''
-    # Copy scopone-rx-service to parent directory with correct structure
+    # Place scopone-rx-service where the craco config expects it
     mkdir -p ../scopone-rx-service
     cp -r ${scoponeRxServiceSrc}/* ../scopone-rx-service/
 
-    # Create .env.production with configurable server address
-    # If serverAddress is null/empty, leave it empty to use dynamic detection
-    ${lib.optionalString (serverAddress != null) ''
-      cat > .env.production << ENVFILE
-      REACT_APP_SERVER_ADDRESS=${serverAddress}
-      ENVFILE
-    ''}
-    ${lib.optionalString (serverAddress == null) ''
-      cat > .env.production << ENVFILE
-      # Empty - will use dynamic server address detection from browser domain
-      ENVFILE
-    ''}
+    # Write .env.production with the configured server address
+    cat > .env.production <<EOF
+    ${lib.optionalString (serverAddress != null) "REACT_APP_SERVER_ADDRESS=${serverAddress}"}
+    EOF
 
-    # Update craco config to use the correct path and configure TypeScript
-    cat > craco.config.js << 'CRACOEOF'
+    # Write a self-contained craco config that resolves the external library
+    cat > craco.config.js <<'CRACO'
     const path = require("path");
 
-    const findWebpackPlugin = (webpackConfig, pluginName) =>
-        webpackConfig.resolve.plugins.find(
-            ({ constructor }) => constructor && constructor.name === pluginName
-        );
-
-    const enableTypescriptImportsFromExternalPaths = (
-        webpackConfig,
-        newIncludePaths
-    ) => {
-        const oneOfRule = webpackConfig.module.rules.find((rule) => rule.oneOf);
-        if (oneOfRule) {
-            const tsxRule = oneOfRule.oneOf.find(
-                (rule) => rule.test && rule.test.toString().includes("tsx")
-            );
-
-            if (tsxRule) {
-                tsxRule.include = Array.isArray(tsxRule.include)
-                    ? [...tsxRule.include, ...newIncludePaths]
-                    : [tsxRule.include, ...newIncludePaths];
-            }
-        }
-    };
-
-    const addPathsToModuleScopePlugin = (webpackConfig, paths) => {
-        const moduleScopePlugin = findWebpackPlugin(
-            webpackConfig,
-            "ModuleScopePlugin"
-        );
-        if (!moduleScopePlugin) {
-            throw new Error(
-                `Expected to find plugin "ModuleScopePlugin", but didn't.`
-            );
-        }
-        moduleScopePlugin.appSrcs = [...moduleScopePlugin.appSrcs, ...paths];
-    };
-
-    const enableImportsFromExternalPaths = (webpackConfig, paths) => {
-        enableTypescriptImportsFromExternalPaths(webpackConfig, paths);
-        addPathsToModuleScopePlugin(webpackConfig, paths);
-    };
-
-    // Paths to the code you want to use
-    const scopone_rx_service_lib = path.resolve(__dirname, "../scopone-rx-service/src");
+    const scoponeRxServiceLib = path.resolve(__dirname, "../scopone-rx-service/src");
 
     module.exports = {
-        webpack: {
-            configure: (config) => {
-                // Find and remove ModuleScopePlugin
-                const scopePluginIndex = config.resolve.plugins.findIndex(
-                    ({ constructor }) => constructor && constructor.name === 'ModuleScopePlugin'
-                );
-                if (scopePluginIndex !== -1) {
-                    config.resolve.plugins.splice(scopePluginIndex, 1);
-                }
+      webpack: {
+        configure: (config) => {
+          // Remove ModuleScopePlugin so imports outside src/ are allowed
+          const idx = config.resolve.plugins.findIndex(
+            ({ constructor }) => constructor && constructor.name === "ModuleScopePlugin"
+          );
+          if (idx !== -1) {
+            config.resolve.plugins.splice(idx, 1);
+          }
 
-                // Add scopone-rx-service to TypeScript loader
-                const oneOfRule = config.module.rules.find((rule) => rule.oneOf);
-                if (oneOfRule) {
-                    const tsRule = oneOfRule.oneOf.find(
-                        (rule) => rule.test && rule.test.toString().includes("tsx")
-                    );
-                    if (tsRule) {
-                        tsRule.include = Array.isArray(tsRule.include)
-                            ? [...tsRule.include, scopone_rx_service_lib]
-                            : [tsRule.include, scopone_rx_service_lib];
-                    }
-                }
+          // Add scopone-rx-service to the TypeScript/TSX loader include
+          const oneOfRule = config.module.rules.find((r) => r.oneOf);
+          if (oneOfRule) {
+            const tsRule = oneOfRule.oneOf.find(
+              (r) => r.test && r.test.toString().includes("tsx")
+            );
+            if (tsRule) {
+              tsRule.include = Array.isArray(tsRule.include)
+                ? [...tsRule.include, scoponeRxServiceLib]
+                : [tsRule.include, scoponeRxServiceLib];
+            }
+          }
 
-                return config;
-            },
+          return config;
         },
-        typescript: {
-            enableTypeChecking: false, // Disable type checking for external packages
-        },
+      },
+      typescript: {
+        enableTypeChecking: false,
+      },
     };
-    CRACOEOF
+    CRACO
   '';
 
   npmDepsHash = "sha256-gGt7Luhp2EK5MTYVSQpCLGAzaoq42sT6X0xHMB1Pb6o=";
@@ -136,7 +86,7 @@ buildNpmPackage rec {
   npmFlags = [ "--legacy-peer-deps" ];
   enableParallelBuilding = true;
 
-  # Use legacy OpenSSL provider for React 17 compatibility
+  # React 17 / webpack compatibility
   env.NODE_OPTIONS = "--openssl-legacy-provider";
   env.npm_config_offline = "true";
   env.npm_config_prefer_offline = "true";
@@ -146,18 +96,25 @@ buildNpmPackage rec {
   env.CI = "true";
 
   buildPhase = ''
+    runHook preBuild
     npm run build
+    runHook postBuild
   '';
 
   installPhase = ''
+    runHook preInstall
     mkdir -p $out
     cp -r build/* $out/
+    runHook postInstall
   '';
 
+  # Expose the output path so NixOS modules (nginx, caddy, …) can reference it
+  passthru.outPath = "/";
+
   meta = with lib; {
-    description = "Scopone card game - React client";
-    homepage = "https://github.com/gerardo/scopone-ng-react";
+    description = "Scopone card game – React client";
+    homepage = "https://github.com/gerrydoro/scopone-ng-react";
     license = licenses.mit;
-    maintainers = [ maintainers.gerardo ];
+    maintainers = [ maintainers.gerrydoro ];
   };
 }

@@ -1,20 +1,31 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+{ config, lib, pkgs, ... }:
 
 let
   cfg = config.services.scopone-client-react;
 
-  # Create the package with the configured server address
+  # Build the package with the configured options
   clientPackage = pkgs.callPackage ./client-react.nix {
     inherit (cfg) serverAddress;
   };
+
+  # The absolute path to the built static files inside the Nix store.
+  # This is the value web servers (caddy, nginx, …) use as their root.
+  # It automatically changes when the package is rebuilt, triggering a
+  # service reload.
+  clientRoot = "${cfg.package}";
+
+  # ---------- Caddyfile fragment ----------
+  caddyfile = pkgs.writeText "scopone-client-react.Caddyfile" ''
+    ${cfg.host}:${toString cfg.port} {
+      root * ${clientRoot}
+      encode gzip
+      try_files {path} /index.html
+      file_server
+    }
+  '';
 in
 {
-  meta.maintainers = [ lib.maintainers.gerardo ];
+  meta.maintainers = [ lib.maintainers.gerrydoro ];
 
   options.services.scopone-client-react = {
     enable = lib.mkEnableOption "Scopone React client";
@@ -28,47 +39,65 @@ in
     host = lib.mkOption {
       type = lib.types.str;
       default = "0.0.0.0";
-      description = "The host address to bind the client web server to.";
+      description = "Host address to bind the client web server to.";
     };
 
     port = lib.mkOption {
       type = lib.types.port;
       default = 65026;
-      description = "The port to listen on for the client web server.";
+      description = "Port to listen on for the client web server.";
     };
 
     serverAddress = lib.mkOption {
       type = lib.types.nullOr lib.types.str;
-      default = null; # null = use dynamic detection from browser domain
+      default = null;
       description = ''
-        The WebSocket address of the Scopone server.
-        If null (default), the client will automatically detect the server
-        address from the browser's current domain.
-        Set to a specific address like "ws://localhost:65025/osteria" or
-        "wss://scopone.gerryd.myaddr.io/osteria" to override.
+        WebSocket address of the Scopone server.
+        When null the client auto-detects the server from the browser domain.
       '';
+    };
+
+    # --- Web server choice ---
+    useCaddy = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Use Caddy to serve the static files.";
     };
 
     useNginx = lib.mkOption {
       type = lib.types.bool;
-      default = true;
-      description = "Whether to use nginx to serve the static files.";
+      default = false;
+      description = "Use Nginx to serve the static files.";
     };
   };
 
   config = lib.mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = cfg.useCaddy || cfg.useNginx;
+        message = "services.scopone-client-react: at least one of useCaddy or useNginx must be true.";
+      }
+    ];
+
+    # ===== Caddy =====
+    services.caddy = lib.mkIf cfg.useCaddy {
+      enable = true;
+      enableReload = true;
+      # The Caddyfile references `clientRoot` which changes on every rebuild.
+      # NixOS will automatically reload Caddy when the path changes.
+      configFile = caddyfile;
+    };
+
+    # ===== Nginx =====
     services.nginx = lib.mkIf cfg.useNginx {
       enable = true;
 
-      virtualHosts."${cfg.host}" = {
+      virtualHosts."scopone-client-react" = {
         listen = [
-          {
-            addr = cfg.host;
-            port = cfg.port;
-          }
+          { addr = cfg.host; port = cfg.port; }
         ];
 
-        root = cfg.package;
+        root = clientRoot;
 
         locations."/" = {
           tryFiles = "$uri $uri/ /index.html";
