@@ -1,4 +1,5 @@
 import React from "react";
+import { getServerAddress } from "../helpers/server-address";
 
 export interface SettingsState {
   serverAddress: string;
@@ -6,7 +7,7 @@ export interface SettingsState {
   resetServerAddress: () => void;
 }
 
-const DEFAULT_SERVER_ADDRESS = "ws://localhost:8080/osteria";
+const DEFAULT_SERVER_ADDRESS = getServerAddress();
 
 const STORAGE_KEY = "scopone_server_address";
 

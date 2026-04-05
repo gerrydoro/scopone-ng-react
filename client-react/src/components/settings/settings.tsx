@@ -11,6 +11,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useSettings } from "../../context/settings-context";
+import { getServerAddress } from "../../helpers/server-address";
 import "./settings.css";
 
 export const Settings: React.FC = () => {
@@ -43,7 +44,7 @@ export const Settings: React.FC = () => {
 
   const handleReset = () => {
     resetServerAddress();
-    setTempAddress("ws://localhost:8080/osteria");
+    setTempAddress(getServerAddress());
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
