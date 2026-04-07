@@ -80,7 +80,7 @@ buildNpmPackage {
     CRACO
   '';
 
-  npmDepsHash = "sha256-gGt7Luhp2EK5MTYVSQpCLGAzaoq42sT6X0xHMB1Pb6o=";
+  npmDepsHash = "sha256-qfc17jfpnxnmMlAcvuB++mf5SRbblIqpLV8aREw6wus=";
   npmDepsFetcherVersion = 2;
   makeCacheWritable = true;
   npmFlags = [ "--legacy-peer-deps" ];
