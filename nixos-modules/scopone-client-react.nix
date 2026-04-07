@@ -48,10 +48,25 @@ in
     };
 
     # --- Web server choice ---
+    enableWebServer = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = ''
+        Enable the built-in web server (Caddy or Nginx).
+        Set to false to use the clientRoot in your own custom web server configuration.
+      '';
+    };
+
     useCaddy = lib.mkOption {
       type = lib.types.bool;
       default = true;
       description = "Use Caddy to serve the static files.";
+    };
+
+    caddyVirtualHost = lib.mkOption {
+      type = lib.types.str;
+      default = "scopone-client";
+      description = "The virtual host name for Caddy.";
     };
 
     useNginx = lib.mkOption {
@@ -74,19 +89,19 @@ in
   config = lib.mkIf cfg.enable {
     assertions = [
       {
-        assertion = cfg.useCaddy || cfg.useNginx;
-        message = "services.scopone-client-react: at least one of useCaddy or useNginx must be true.";
+        assertion = !cfg.enableWebServer || cfg.useCaddy || cfg.useNginx;
+        message = "services.scopone-client-react: enableWebServer is true, but both useCaddy and useNginx are false. Set enableWebServer to false or enable at least one web server.";
       }
     ];
 
     # ===== Caddy =====
-    services.caddy = lib.mkIf cfg.useCaddy {
+    services.caddy = lib.mkIf (cfg.enableWebServer && cfg.useCaddy) {
       enable = true;
       # Using virtualHosts (not configFile) so this plays nicely with
       # other caddy configuration that may exist elsewhere.
       # Because `clientRoot` is embedded here, any rebuild of the client
       # package changes this derivation, which triggers a caddy reload.
-      virtualHosts."scopone-client" = {
+      virtualHosts."${cfg.caddyVirtualHost}" = {
         extraConfig = ''
           bind ${cfg.host}
           root * ${clientRoot}
@@ -98,7 +113,7 @@ in
     };
 
     # ===== Nginx =====
-    services.nginx = lib.mkIf cfg.useNginx {
+    services.nginx = lib.mkIf (cfg.enableWebServer && cfg.useNginx) {
       enable = true;
 
       virtualHosts."scopone-client-react" = {
