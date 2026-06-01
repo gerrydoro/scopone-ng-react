@@ -1,13 +1,15 @@
-{ lib
-, buildNpmPackage
-, nodejs
-, serverAddress ? null
+{
+  lib,
+  buildNpmPackage,
+  nodejs,
+  serverAddress ? null,
 }:
 
 let
   scoponeRxServiceSrc = lib.cleanSourceWith {
     src = ../scopone-rx-service;
-    filter = path: type:
+    filter =
+      path: type:
       let
         baseName = baseNameOf (toString path);
       in
@@ -20,7 +22,8 @@ buildNpmPackage {
 
   src = lib.cleanSourceWith {
     src = ../client-react;
-    filter = path: type:
+    filter =
+      path: type:
       let
         baseName = baseNameOf (toString path);
       in
@@ -80,7 +83,7 @@ buildNpmPackage {
     CRACO
   '';
 
-  npmDepsHash = "sha256-qfc17jfpnxnmMlAcvuB++mf5SRbblIqpLV8aREw6wus=";
+  npmDepsHash = "sha256-gGt7Luhp2EK5MTYVSQpCLGAzaoq42sT6X0xHMB1Pb6o=";
   npmDepsFetcherVersion = 2;
   makeCacheWritable = true;
   npmFlags = [ "--legacy-peer-deps" ];
